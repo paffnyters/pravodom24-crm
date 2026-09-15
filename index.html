@@ -25,41 +25,1079 @@
 <body>
 <div id="root"></div>
 <div id="statusbar" class="statusbar hidden"></div>
+
 <script>
-const CONFIG_KEY='pravodom24_crm_web_config_v3';
+const SUPABASE_URL='https://ncuthxvxiwghjgduchhc.supabase.co';
+const SUPABASE_KEY='sb_publishable_30uyWrQ06THITcEIVe4WTw_2BeQSGnp';
+
 let sb=null;
-const state={view:'board',pipeline:'sales',clients:[],tasks:[],activities:[],current:null,user:null,subscription:null,search:'',loading:false};
-const STAGES={
- sales:[['new','Новый контакт'],['replied','Ответил'],['interested','Интерес'],['terms','Обсуждаем условия'],['docs_promised','Документы обещаны'],['docs_received','Документы получены'],['first_order','Первый заказ'],['regular','Постоянный клиент']],
- active:[['waiting_docs','Ждём документы'],['docs_received','Документы получены'],['in_work','В работе'],['needs_info','Нужна информация'],['result','Результат'],['next_order','Следующий заказ']],
- repeat:[['client','Есть клиент'],['new_debt','Новая задолженность'],['remind','Напомнить'],['new_package','Получен новый пакет'],['in_work','В работе']]
+
+const state={
+  view:'board',
+  pipeline:'sales',
+  clients:[],
+  tasks:[],
+  activities:[],
+  current:null,
+  user:null,
+  subscription:null,
+  search:'',
+  loading:false
 };
-const PIPE={sales:'Продажи',active:'Действующие клиенты',repeat:'Повторные продажи'};
-const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-const money=v=>v==null||v===''?'':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Number(v))+' ₽';
-const dt=v=>v?new Date(v).toLocaleString('ru-RU',{dateStyle:'short',timeStyle:'short'}):'';
-const stageName=c=>(STAGES[c.pipeline]||[]).find(x=>x[0]===c.stage)?.[1]||c.stage||'';
-function toast(text){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.append(t)}t.textContent=text;t.classList.remove('hidden');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.add('hidden'),4500)}
-function status(text,kind=''){const s=$('#statusbar');s.textContent=text;s.className='statusbar '+kind;s.classList.remove('hidden')}
-function getConfig(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'null')}catch{return null}}
-function setConfig(c){localStorage.setItem(CONFIG_KEY,JSON.stringify(c))}
-function showConfig(){document.body.innerHTML=`<div class="center"><div class="auth stack"><div class="brand">PravoDom<span>24</span> CRM</div><div class="muted">Подключение к вашему Supabase-проекту</div><div class="field"><label>Project URL</label><input id="url" placeholder="https://xxxxxxxx.supabase.co"></div><div class="field"><label>Publishable key</label><input id="key" placeholder="sb_publishable_..."></div><button class="primary" id="connect">Подключить</button><div class="hint">Используй только publishable/anon key. Secret/service_role key сюда вставлять нельзя.</div><div id="msg" class="error"></div></div></div>`;$('#connect').onclick=()=>{const url=$('#url').value.trim(),key=$('#key').value.trim();if(!/^https:\/\/.+\.supabase\.co$/.test(url)||!key){$('#msg').textContent='Проверь Project URL и ключ';return}setConfig({url,key});location.reload()}}
-function showLogin(){document.body.innerHTML=`<div class="center"><div class="auth stack"><div class="brand">PravoDom<span>24</span> CRM</div><div class="muted">Вход в общую CRM</div><div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div><div class="field"><label>Пароль</label><input id="pass" type="password" autocomplete="current-password"></div><button class="primary" id="login">Войти</button><button class="ghost" id="resetConfig">Изменить подключение</button><div id="msg" class="error"></div></div></div>`;$('#login').onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$('#email').value.trim(),password:$('#pass').value});if(error)$('#msg').textContent=error.message;else await startApp()};$('#resetConfig').onclick=()=>{localStorage.removeItem(CONFIG_KEY);location.reload()}}
-async function ensureMember(){const {data,error}=await sb.rpc('is_crm_member');if(error)throw error;return data===true}
-async function startApp(){const {data:{user}}=await sb.auth.getUser();state.user=user;if(!user){showLogin();return}try{if(!(await ensureMember())){await sb.auth.signOut();showLogin();toast('Пользователь не активирован в CRM');return}}catch(e){showLogin();toast(e.message);return}renderShell();await reloadAll();subscribeRealtime();status(`В сети · ${user.email}`,'ok')}
-function renderShell(){document.body.innerHTML=`<div class="app"><aside class="sidebar"><div class="brand">P<span>24</span></div><button class="nav active" data-view="board">Воронка</button><button class="nav" data-view="clients">Клиенты</button><button class="nav" data-view="tasks">Задачи</button><button class="nav" data-view="today">Сегодня</button><div class="sidebar-foot"><div class="user-email muted">${esc(state.user.email)}</div><button id="logout">Выйти</button></div></aside><main class="main"><header class="topbar"><div class="view-title"><h1 id="title">Воронка</h1><div class="muted" id="subtitle"></div></div><div class="topbar-actions"><input id="search" placeholder="Поиск по клиентам" style="min-width:220px"><select id="pipeline" style="width:auto"><option value="sales">Продажи</option><option value="active">Действующие клиенты</option><option value="repeat">Повторные продажи</option></select><button class="primary" id="newClient">+ Клиент</button></div></header><section class="content" id="content"></section></main></div>`;document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{state.view=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));renderCurrent()});$('#pipeline').value=state.pipeline;$('#pipeline').onchange=e=>{state.pipeline=e.target.value;renderCurrent()};$('#search').oninput=e=>{state.search=e.target.value;renderCurrent()};$('#newClient').onclick=newClient;$('#logout').onclick=async()=>{if(state.subscription)sb.removeChannel(state.subscription);await sb.auth.signOut();location.reload()}}
-function filtered(){const q=state.search.trim().toLowerCase();return state.clients.filter(c=>{const pipe=c.pipeline===state.pipeline;const text=[c.company_name,c.contact_name,c.email,c.phone,c.inn].join(' ').toLowerCase();return pipe&&(!q||text.includes(q))})}
-function renderCurrent(){if(state.view==='board')renderBoard();else if(state.view==='clients')renderClients();else if(state.view==='tasks')renderTasks();else renderToday()}
-function renderBoard(){const cs=filtered();$('#title').textContent=PIPE[state.pipeline];$('#subtitle').textContent=`${cs.length} клиентов`;const cols=STAGES[state.pipeline];$('#content').innerHTML=`<div class="toolbar"><span class="muted">Перетаскивание между этапами пока заменено быстрым выбором этапа в карточке</span></div><div class="board">${cols.map(([k,l])=>{const list=cs.filter(c=>c.stage===k);return `<div class="col"><div class="colhead"><b>${esc(l)}</b><span class="pill">${list.length}</span></div><div class="cards">${list.map(cardHtml).join('')||'<div class="empty">Пусто</div>'}</div></div>`}).join('')}</div>`;document.querySelectorAll('[data-client]').forEach(b=>b.onclick=()=>openClient(b.dataset.client))}
-function cardHtml(c){const open=state.tasks.filter(t=>t.client_id===c.id&&t.status==='open').sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));const next=open[0];return `<div class="card" data-client="${c.id}"><div class="card-title">${esc(c.company_name)}</div><div class="card-meta">${esc(c.contact_name||'')}${c.position?' · '+esc(c.position):''}</div><div class="card-foot">${c.potential_debtors?`<span class="tag">${c.potential_debtors} должн.</span>`:''}${next?`<span class="tag ${new Date(next.due_at)<new Date()?'bad':'warn'}">${new Date(next.due_at)<new Date()?'Просрочено':'Следующее'}: ${dt(next.due_at)}</span>`:''}</div></div>`}
-function renderClients(){const cs=filtered();$('#title').textContent='Клиенты';$('#subtitle').textContent=`${cs.length} в текущей воронке`;$('#content').innerHTML=`<div class="table-wrap"><table class="table"><thead><tr><th>Компания</th><th>Контакт</th><th>Email</th><th>Телефон</th><th>Этап</th><th>Задачи</th></tr></thead><tbody>${cs.map(c=>{const n=state.tasks.filter(t=>t.client_id===c.id&&t.status==='open').length;return `<tr data-client="${c.id}"><td><b>${esc(c.company_name)}</b></td><td>${esc(c.contact_name||'')}</td><td>${esc(c.email||'')}</td><td>${esc(c.phone||'')}</td><td>${esc(stageName(c))}</td><td>${n}</td></tr>`}).join('')||'<tr><td colspan="6"><div class="empty">Нет клиентов</div></td></tr>'}</tbody></table></div>`;document.querySelectorAll('[data-client]').forEach(b=>b.onclick=()=>openClient(b.dataset.client))}
-function renderTasks(){const open=state.tasks.filter(t=>t.status==='open').sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));$('#title').textContent='Задачи';$('#subtitle').textContent=`${open.length} открытых`;$('#content').innerHTML=`<div class="task-list">${open.map(t=>{const c=state.clients.find(x=>x.id===t.client_id);const over=new Date(t.due_at)<new Date();return `<div class="task"><div class="task-main"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(c?.company_name||'')} · ${dt(t.due_at)}</div></div><button data-done="${t.id}">Готово</button><button class="ghost" data-task-client="${t.client_id}">Клиент</button>${over?'<span class="tag bad">Просрочено</span>':''}</div>`}).join('')||'<div class="empty">Нет открытых задач</div>'}</div>`;document.querySelectorAll('[data-done]').forEach(b=>b.onclick=async()=>{const {error}=await sb.from('tasks').update({status:'done'}).eq('id',b.dataset.done);if(error)toast(error.message);else await reloadAll()});document.querySelectorAll('[data-task-client]').forEach(b=>b.onclick=()=>openClient(b.dataset.taskClient))}
-function renderToday(){const now=new Date();const today=state.tasks.filter(t=>t.status==='open'&&new Date(t.due_at).toDateString()===now.toDateString());const overdue=state.tasks.filter(t=>t.status==='open'&&new Date(t.due_at)<now);const revenue=state.clients.reduce((s,c)=>s+Number(c.estimated_revenue||0),0);$('#title').textContent='Сегодня';$('#subtitle').textContent=`${today.length} задач сегодня`;$('#content').innerHTML=`<div class="stats"><div class="stat"><span>Задач сегодня</span><b>${today.length}</b></div><div class="stat"><span>Просрочено</span><b class="${overdue.length?'overdue':''}">${overdue.length}</b></div><div class="stat"><span>Клиентов</span><b>${state.clients.filter(c=>c.pipeline==='active').length}</b></div><div class="stat"><span>Потенциальная выручка</span><b>${money(revenue)||'0 ₽'}</b></div></div><div class="task-list">${today.sort((a,b)=>new Date(a.due_at)-new Date(b.due_at)).map(t=>{const c=state.clients.find(x=>x.id===t.client_id);return `<div class="task"><div class="task-main"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(c?.company_name||'')} · ${dt(t.due_at)}</div></div><button data-task-client="${t.client_id}">Клиент</button></div>`}).join('')||'<div class="empty">Сегодня всё спокойно</div>'}</div>`;document.querySelectorAll('[data-task-client]').forEach(b=>b.onclick=()=>openClient(b.dataset.taskClient))}
-async function reloadAll(){state.loading=true;try{const [c,t,a]=await Promise.all([sb.from('clients').select('*').is('deleted_at',null).order('created_at',{ascending:false}),sb.from('tasks').select('*').order('due_at',{ascending:true}),sb.from('activities').select('*').order('created_at',{ascending:false}).limit(1000)]);for(const r of [c,t,a])if(r.error)throw r.error;state.clients=c.data||[];state.tasks=t.data||[];state.activities=a.data||[];renderCurrent()}catch(e){toast('Ошибка загрузки: '+e.message);status('Ошибка соединения','bad')}finally{state.loading=false}}
-function subscribeRealtime(){if(state.subscription)sb.removeChannel(state.subscription);state.subscription=sb.channel('crm-live').on('postgres_changes',{event:'*',schema:'public',table:'clients'},()=>reloadAll()).on('postgres_changes',{event:'*',schema:'public',table:'tasks'},()=>reloadAll()).on('postgres_changes',{event:'*',schema:'public',table:'activities'},()=>reloadAll()).subscribe(s=>{if(s==='SUBSCRIBED')status(`Realtime · ${state.user.email}`,'ok')})}
-function openClient(id){const c=state.clients.find(x=>x.id===id);if(!c)return;const acts=state.activities.filter(a=>a.client_id===id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));const tasks=state.tasks.filter(t=>t.client_id===id&&t.status==='open').sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));const ov=document.createElement('div');ov.className='overlay';ov.innerHTML=`<div class="modal"><div class="modal-head"><div><h2>${esc(c.company_name)}</h2><div class="muted">${esc(c.contact_name||'')}${c.position?' · '+esc(c.position):''}</div></div><button id="close">×</button></div><div class="detail-grid"><div class="stack"><div class="field"><label>Контакт</label><input id="contact" value="${esc(c.contact_name||'')}"></div><div class="field"><label>Должность</label><input id="position" value="${esc(c.position||'')}"></div><div class="field"><label>Email</label><input id="email" value="${esc(c.email||'')}"></div><div class="field"><label>Телефон</label><input id="phone" value="${esc(c.phone||'')}"></div><div class="field"><label>Telegram</label><input id="telegram" value="${esc(c.telegram||'')}"></div><div class="field"><label>MAX</label><input id="max_contact" value="${esc(c.max_contact||'')}"></div><div class="field"><label>Сайт</label><input id="website" value="${esc(c.website||'')}"></div><div class="field"><label>ИНН</label><input id="inn" value="${esc(c.inn||'')}"></div></div><div class="stack"><div class="field"><label>Воронка</label><select id="pipe">${Object.entries(PIPE).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></div><div class="field"><label>Этап</label><select id="stage"></select></div><div class="field"><label>Потенциал, должников</label><input id="pot" type="number" value="${c.potential_debtors??''}"></div><div class="field"><label>Потенциальная выручка</label><input id="rev" type="number" value="${c.estimated_revenue??''}"></div><div class="field"><label>Согласованный срок</label><input id="agreed" type="date" value="${c.agreed_date||''}"></div><div class="field"><label>Заметки</label><textarea id="notes">${esc(c.notes||'')}</textarea></div><button class="primary" id="save">Сохранить</button></div></div><div class="section"><div class="toolbar"><b>Открытые задачи</b><span class="grow"></span></div>${tasks.length?`<div class="task-list">${tasks.map(t=>`<div class="task"><div class="task-main"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.kind)} · ${dt(t.due_at)}</div></div><button data-done="${t.id}">Готово</button></div>`).join('')}</div>`:'<div class="empty">Нет открытых задач</div>'}</div><div class="section"><div class="toolbar"><b>Новая задача</b><span class="grow"></span></div><div class="detail-grid"><div class="field"><label>Название</label><input id="taskTitle" placeholder="Получить документы"></div><div class="field"><label>Срок</label><input id="taskDue" type="datetime-local"></div></div><div class="field"><label>Тип</label><select id="taskKind"><option value="documents">Документы</option><option value="follow_up">Напоминание</option><option value="call">Звонок</option><option value="other">Другое</option></select></div><button id="addTask">Добавить задачу</button></div><div class="section"><div class="toolbar"><b>История</b><span class="grow"></span></div>${acts.map(a=>`<div class="activity"><div class="activity-head"><span>${esc(a.kind)}</span><span>${dt(a.created_at)}</span></div><div>${esc(a.text)}</div></div>`).join('')||'<div class="empty">История пуста</div>'}<div class="field" style="margin-top:10px"><label>Добавить запись</label><textarea id="actText" placeholder="Созвонились, документы обещаны до пятницы"></textarea></div><button id="addAct">Добавить запись</button></div></div>`;document.body.append(ov);const pipe=ov.querySelector('#pipe'),stage=ov.querySelector('#stage');pipe.value=c.pipeline;const refreshStages=()=>{stage.innerHTML=STAGES[pipe.value].map(([k,l])=>`<option value="${k}">${l}</option>`).join('');stage.value=pipe.value===c.pipeline?c.stage:STAGES[pipe.value][0][0]};refreshStages();pipe.onchange=refreshStages;ov.querySelector('#close').onclick=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)ov.remove()};ov.querySelector('#save').onclick=async()=>{const patch={contact_name:ov.querySelector('#contact').value.trim(),position:ov.querySelector('#position').value.trim(),email:ov.querySelector('#email').value.trim(),phone:ov.querySelector('#phone').value.trim(),telegram:ov.querySelector('#telegram').value.trim(),max_contact:ov.querySelector('#max_contact').value.trim(),website:ov.querySelector('#website').value.trim(),inn:ov.querySelector('#inn').value.trim(),pipeline:pipe.value,stage:stage.value,potential_debtors:Number(ov.querySelector('#pot').value)||null,estimated_revenue:Number(ov.querySelector('#rev').value)||null,agreed_date:ov.querySelector('#agreed').value||null,notes:ov.querySelector('#notes').value};const {data:{user}}=await sb.auth.getUser();const {error}=await sb.from('clients').update(patch).eq('id',id);if(error)toast(error.message);else{await sb.from('activities').insert({client_id:id,kind:'stage_change',text:`Карточка клиента обновлена пользователем ${user.email}`,created_by:user.id});ov.remove();await reloadAll()}};ov.querySelector('#addTask').onclick=async()=>{const title=ov.querySelector('#taskTitle').value.trim(),due=ov.querySelector('#taskDue').value;if(!title||!due){toast('Заполни название и срок');return}const {data:{user}}=await sb.auth.getUser();const {error}=await sb.from('tasks').insert({client_id:id,title,due_at:new Date(due).toISOString(),kind:ov.querySelector('#taskKind').value,status:'open',owner_id:user.id,created_by:user.id});if(error)toast(error.message);else{ov.remove();await reloadAll();openClient(id)}};ov.querySelector('#addAct').onclick=async()=>{const text=ov.querySelector('#actText').value.trim();if(!text)return;const {data:{user}}=await sb.auth.getUser();const {error}=await sb.from('activities').insert({client_id:id,text,created_by:user.id,kind:'note'});if(error)toast(error.message);else{ov.remove();await reloadAll();openClient(id)}};ov.querySelectorAll('[data-done]').forEach(b=>b.onclick=async()=>{const {error}=await sb.from('tasks').update({status:'done'}).eq('id',b.dataset.done);if(error)toast(error.message);else{ov.remove();await reloadAll();openClient(id)}})}
-async function newClient(){const ov=document.createElement('div');ov.className='overlay';ov.innerHTML=`<div class="modal small"><div class="modal-head"><h3>Новый клиент</h3><button id="x">×</button></div><div class="stack"><div class="field"><label>Компания</label><input id="company"></div><div class="field"><label>Контакт</label><input id="contact"></div><div class="field"><label>Email</label><input id="email"></div><div class="field"><label>Телефон</label><input id="phone"></div><div class="field"><label>Сайт</label><input id="website"></div><div class="field"><label>Воронка</label><select id="pipe">${Object.entries(PIPE).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></div><button class="primary" id="create">Создать</button></div></div>`;document.body.append(ov);ov.querySelector('#x').onclick=()=>ov.remove();ov.querySelector('#create').onclick=async()=>{const company=ov.querySelector('#company').value.trim();if(!company){toast('Укажи компанию');return}const {data:{user}}=await sb.auth.getUser(),pipe=ov.querySelector('#pipe').value;const {error}=await sb.from('clients').insert({company_name:company,contact_name:ov.querySelector('#contact').value.trim(),email:ov.querySelector('#email').value.trim(),phone:ov.querySelector('#phone').value.trim(),website:ov.querySelector('#website').value.trim(),pipeline:pipe,stage:STAGES[pipe][0][0],owner_id:user.id});if(error)toast(error.message);else{ov.remove();await reloadAll();openClient(state.clients.find(c=>c.company_name===company)?.id)}}}
-async function boot(){const cfg=getConfig();if(!cfg?.url||!cfg?.key){showConfig();return}sb=window.supabase.createClient(cfg.url,cfg.key);const {data:{session}}=await sb.auth.getSession();if(session)await startApp();else showLogin();sb.auth.onAuthStateChange((_e,s)=>{if(s?.user&&!state.user)startApp()})}
+
+const STAGES={
+  sales:[
+    ['new','Новый контакт'],
+    ['replied','Ответил'],
+    ['interested','Интерес'],
+    ['terms','Обсуждаем условия'],
+    ['docs_promised','Документы обещаны'],
+    ['docs_received','Документы получены'],
+    ['first_order','Первый заказ'],
+    ['regular','Постоянный клиент']
+  ],
+  active:[
+    ['waiting_docs','Ждём документы'],
+    ['docs_received','Документы получены'],
+    ['in_work','В работе'],
+    ['needs_info','Нужна информация'],
+    ['result','Результат'],
+    ['next_order','Следующий заказ']
+  ],
+  repeat:[
+    ['client','Есть клиент'],
+    ['new_debt','Новая задолженность'],
+    ['remind','Напомнить'],
+    ['new_package','Получен новый пакет'],
+    ['in_work','В работе']
+  ]
+};
+
+const PIPE={
+  sales:'Продажи',
+  active:'Действующие клиенты',
+  repeat:'Повторные продажи'
+};
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#039;'
+}[m]));
+
+const money=v=>
+  v==null||v===''?'':
+  new Intl.NumberFormat('ru-RU',{
+    maximumFractionDigits:0
+  }).format(Number(v))+' ₽';
+
+const dt=v=>
+  v?new Date(v).toLocaleString('ru-RU',{
+    dateStyle:'short',
+    timeStyle:'short'
+  }):'';
+
+const stageName=c=>
+  (STAGES[c.pipeline]||[]).find(x=>x[0]===c.stage)?.[1]||
+  c.stage||
+  '';
+
+function toast(text){
+  let t=$('.toast');
+  if(!t){
+    t=document.createElement('div');
+    t.className='toast';
+    document.body.append(t);
+  }
+  t.textContent=text;
+  t.classList.remove('hidden');
+  clearTimeout(toast.timer);
+  toast.timer=setTimeout(()=>t.classList.add('hidden'),4500);
+}
+
+function status(text,kind=''){
+  const s=$('#statusbar');
+  s.textContent=text;
+  s.className='statusbar '+kind;
+  s.classList.remove('hidden');
+}
+
+function showLogin(){
+  document.body.innerHTML=`
+    <div class="center">
+      <div class="auth stack">
+        <div class="brand">PravoDom<span>24</span> CRM</div>
+        <div class="muted">Вход в общую CRM</div>
+
+        <div class="field">
+          <label>Email</label>
+          <input id="email" type="email" autocomplete="username">
+        </div>
+
+        <div class="field">
+          <label>Пароль</label>
+          <input id="pass" type="password" autocomplete="current-password">
+        </div>
+
+        <button class="primary" id="login">Войти</button>
+
+        <div id="msg" class="error"></div>
+      </div>
+    </div>
+  `;
+
+  $('#login').onclick=async()=>{
+    const {error}=await sb.auth.signInWithPassword({
+      email:$('#email').value.trim(),
+      password:$('#pass').value
+    });
+
+    if(error){
+      $('#msg').textContent=error.message;
+    }else{
+      await startApp();
+    }
+  };
+}
+
+async function ensureMember(){
+  const {data,error}=await sb.rpc('is_crm_member');
+
+  if(error)throw error;
+
+  return data===true;
+}
+
+async function startApp(){
+  const {
+    data:{user}
+  }=await sb.auth.getUser();
+
+  state.user=user;
+
+  if(!user){
+    showLogin();
+    return;
+  }
+
+  try{
+    if(!(await ensureMember())){
+      await sb.auth.signOut();
+      showLogin();
+      toast('Пользователь не активирован в CRM');
+      return;
+    }
+  }catch(e){
+    showLogin();
+    toast(e.message);
+    return;
+  }
+
+  renderShell();
+  await reloadAll();
+  subscribeRealtime();
+
+  status(`В сети · ${user.email}`,'ok');
+}
+
+function renderShell(){
+  document.body.innerHTML=`
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">P<span>24</span></div>
+
+        <button class="nav active" data-view="board">Воронка</button>
+        <button class="nav" data-view="clients">Клиенты</button>
+        <button class="nav" data-view="tasks">Задачи</button>
+        <button class="nav" data-view="today">Сегодня</button>
+
+        <div class="sidebar-foot">
+          <div class="user-email muted">${esc(state.user.email)}</div>
+          <button id="logout">Выйти</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="view-title">
+            <h1 id="title">Воронка</h1>
+            <div class="muted" id="subtitle"></div>
+          </div>
+
+          <div class="topbar-actions">
+            <input id="search" placeholder="Поиск по клиентам" style="min-width:220px">
+
+            <select id="pipeline" style="width:auto">
+              <option value="sales">Продажи</option>
+              <option value="active">Действующие клиенты</option>
+              <option value="repeat">Повторные продажи</option>
+            </select>
+
+            <button class="primary" id="newClient">+ Клиент</button>
+          </div>
+        </header>
+
+        <section class="content" id="content"></section>
+      </main>
+    </div>
+  `;
+
+  document.querySelectorAll('[data-view]').forEach(b=>
+    b.onclick=()=>{
+      state.view=b.dataset.view;
+
+      document.querySelectorAll('[data-view]')
+        .forEach(x=>x.classList.toggle('active',x===b));
+
+      renderCurrent();
+    }
+  );
+
+  $('#pipeline').value=state.pipeline;
+
+  $('#pipeline').onchange=e=>{
+    state.pipeline=e.target.value;
+    renderCurrent();
+  };
+
+  $('#search').oninput=e=>{
+    state.search=e.target.value;
+    renderCurrent();
+  };
+
+  $('#newClient').onclick=newClient;
+
+  $('#logout').onclick=async()=>{
+    if(state.subscription){
+      sb.removeChannel(state.subscription);
+    }
+
+    await sb.auth.signOut();
+    location.reload();
+  };
+}
+
+function filtered(){
+  const q=state.search.trim().toLowerCase();
+
+  return state.clients.filter(c=>{
+    const pipe=c.pipeline===state.pipeline;
+
+    const text=[
+      c.company_name,
+      c.contact_name,
+      c.email,
+      c.phone,
+      c.inn
+    ].join(' ').toLowerCase();
+
+    return pipe&&(!q||text.includes(q));
+  });
+}
+
+function renderCurrent(){
+  if(state.view==='board')renderBoard();
+  else if(state.view==='clients')renderClients();
+  else if(state.view==='tasks')renderTasks();
+  else renderToday();
+}
+
+function renderBoard(){
+  const cs=filtered();
+
+  $('#title').textContent=PIPE[state.pipeline];
+  $('#subtitle').textContent=`${cs.length} клиентов`;
+
+  const cols=STAGES[state.pipeline];
+
+  $('#content').innerHTML=`
+    <div class="toolbar">
+      <span class="muted">
+        Перетаскивание между этапами пока заменено быстрым выбором этапа в карточке
+      </span>
+    </div>
+
+    <div class="board">
+      ${cols.map(([k,l])=>{
+        const list=cs.filter(c=>c.stage===k);
+
+        return `
+          <div class="col">
+            <div class="colhead">
+              <b>${esc(l)}</b>
+              <span class="pill">${list.length}</span>
+            </div>
+
+            <div class="cards">
+              ${list.map(cardHtml).join('')||'<div class="empty">Пусто</div>'}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  document.querySelectorAll('[data-client]')
+    .forEach(b=>b.onclick=()=>openClient(b.dataset.client));
+}
+
+function cardHtml(c){
+  const open=state.tasks
+    .filter(t=>t.client_id===c.id&&t.status==='open')
+    .sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));
+
+  const next=open[0];
+
+  return `
+    <div class="card" data-client="${c.id}">
+      <div class="card-title">${esc(c.company_name)}</div>
+
+      <div class="card-meta">
+        ${esc(c.contact_name||'')}
+        ${c.position?' · '+esc(c.position):''}
+      </div>
+
+      <div class="card-foot">
+        ${
+          c.potential_debtors
+          ?`<span class="tag">${c.potential_debtors} должн.</span>`
+          :''
+        }
+
+        ${
+          next
+          ?`<span class="tag ${new Date(next.due_at)<new Date()?'bad':'warn'}">
+              ${new Date(next.due_at)<new Date()?'Просрочено':'Следующее'}:
+              ${dt(next.due_at)}
+            </span>`
+          :''
+        }
+      </div>
+    </div>
+  `;
+}
+
+function renderClients(){
+  const cs=filtered();
+
+  $('#title').textContent='Клиенты';
+  $('#subtitle').textContent=`${cs.length} в текущей воронке`;
+
+  $('#content').innerHTML=`
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Компания</th>
+            <th>Контакт</th>
+            <th>Email</th>
+            <th>Телефон</th>
+            <th>Этап</th>
+            <th>Задачи</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${
+            cs.map(c=>{
+              const n=state.tasks.filter(
+                t=>t.client_id===c.id&&t.status==='open'
+              ).length;
+
+              return `
+                <tr data-client="${c.id}">
+                  <td><b>${esc(c.company_name)}</b></td>
+                  <td>${esc(c.contact_name||'')}</td>
+                  <td>${esc(c.email||'')}</td>
+                  <td>${esc(c.phone||'')}</td>
+                  <td>${esc(stageName(c))}</td>
+                  <td>${n}</td>
+                </tr>
+              `;
+            }).join('')||
+            '<tr><td colspan="6"><div class="empty">Нет клиентов</div></td></tr>'
+          }
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  document.querySelectorAll('[data-client]')
+    .forEach(b=>b.onclick=()=>openClient(b.dataset.client));
+}
+
+function renderTasks(){
+  const open=state.tasks
+    .filter(t=>t.status==='open')
+    .sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));
+
+  $('#title').textContent='Задачи';
+  $('#subtitle').textContent=`${open.length} открытых`;
+
+  $('#content').innerHTML=`
+    <div class="task-list">
+      ${
+        open.map(t=>{
+          const c=state.clients.find(x=>x.id===t.client_id);
+          const over=new Date(t.due_at)<new Date();
+
+          return `
+            <div class="task">
+              <div class="task-main">
+                <div class="task-title">${esc(t.title)}</div>
+                <div class="task-sub">
+                  ${esc(c?.company_name||'')} · ${dt(t.due_at)}
+                </div>
+              </div>
+
+              <button data-done="${t.id}">Готово</button>
+
+              <button class="ghost" data-task-client="${t.client_id}">
+                Клиент
+              </button>
+
+              ${over?'<span class="tag bad">Просрочено</span>':''}
+            </div>
+          `;
+        }).join('')||
+        '<div class="empty">Нет открытых задач</div>'
+      }
+    </div>
+  `;
+
+  document.querySelectorAll('[data-done]').forEach(b=>
+    b.onclick=async()=>{
+      const {error}=await sb
+        .from('tasks')
+        .update({status:'done'})
+        .eq('id',b.dataset.done);
+
+      if(error)toast(error.message);
+      else await reloadAll();
+    }
+  );
+
+  document.querySelectorAll('[data-task-client]')
+    .forEach(b=>b.onclick=()=>openClient(b.dataset.taskClient));
+}
+
+function renderToday(){
+  const now=new Date();
+
+  const today=state.tasks.filter(
+    t=>t.status==='open'&&
+    new Date(t.due_at).toDateString()===now.toDateString()
+  );
+
+  const overdue=state.tasks.filter(
+    t=>t.status==='open'&&new Date(t.due_at)<now
+  );
+
+  const revenue=state.clients.reduce(
+    (s,c)=>s+Number(c.estimated_revenue||0),0
+  );
+
+  $('#title').textContent='Сегодня';
+  $('#subtitle').textContent=`${today.length} задач сегодня`;
+
+  $('#content').innerHTML=`
+    <div class="stats">
+      <div class="stat">
+        <span>Задач сегодня</span>
+        <b>${today.length}</b>
+      </div>
+
+      <div class="stat">
+        <span>Просрочено</span>
+        <b class="${overdue.length?'overdue':''}">${overdue.length}</b>
+      </div>
+
+      <div class="stat">
+        <span>Клиентов</span>
+        <b>${state.clients.filter(c=>c.pipeline==='active').length}</b>
+      </div>
+
+      <div class="stat">
+        <span>Потенциальная выручка</span>
+        <b>${money(revenue)||'0 ₽'}</b>
+      </div>
+    </div>
+
+    <div class="task-list">
+      ${
+        today
+          .sort((a,b)=>new Date(a.due_at)-new Date(b.due_at))
+          .map(t=>{
+            const c=state.clients.find(x=>x.id===t.client_id);
+
+            return `
+              <div class="task">
+                <div class="task-main">
+                  <div class="task-title">${esc(t.title)}</div>
+                  <div class="task-sub">
+                    ${esc(c?.company_name||'')} · ${dt(t.due_at)}
+                  </div>
+                </div>
+
+                <button data-task-client="${t.client_id}">
+                  Клиент
+                </button>
+              </div>
+            `;
+          }).join('')||
+        '<div class="empty">Сегодня всё спокойно</div>'
+      }
+    </div>
+  `;
+
+  document.querySelectorAll('[data-task-client]')
+    .forEach(b=>b.onclick=()=>openClient(b.dataset.taskClient));
+}
+
+async function reloadAll(){
+  state.loading=true;
+
+  try{
+    const [c,t,a]=await Promise.all([
+      sb.from('clients')
+        .select('*')
+        .is('deleted_at',null)
+        .order('created_at',{ascending:false}),
+
+      sb.from('tasks')
+        .select('*')
+        .order('due_at',{ascending:true}),
+
+      sb.from('activities')
+        .select('*')
+        .order('created_at',{ascending:false})
+        .limit(1000)
+    ]);
+
+    for(const r of [c,t,a]){
+      if(r.error)throw r.error;
+    }
+
+    state.clients=c.data||[];
+    state.tasks=t.data||[];
+    state.activities=a.data||[];
+
+    renderCurrent();
+
+  }catch(e){
+    toast('Ошибка загрузки: '+e.message);
+    status('Ошибка соединения','bad');
+  }finally{
+    state.loading=false;
+  }
+}
+
+function subscribeRealtime(){
+  if(state.subscription){
+    sb.removeChannel(state.subscription);
+  }
+
+  state.subscription=sb
+    .channel('crm-live')
+    .on(
+      'postgres_changes',
+      {event:'*',schema:'public',table:'clients'},
+      ()=>reloadAll()
+    )
+    .on(
+      'postgres_changes',
+      {event:'*',schema:'public',table:'tasks'},
+      ()=>reloadAll()
+    )
+    .on(
+      'postgres_changes',
+      {event:'*',schema:'public',table:'activities'},
+      ()=>reloadAll()
+    )
+    .subscribe(s=>{
+      if(s==='SUBSCRIBED'){
+        status(`Realtime · ${state.user.email}`,'ok');
+      }
+    });
+}
+
+function openClient(id){
+  const c=state.clients.find(x=>x.id===id);
+
+  if(!c)return;
+
+  const acts=state.activities
+    .filter(a=>a.client_id===id)
+    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+
+  const tasks=state.tasks
+    .filter(t=>t.client_id===id&&t.status==='open')
+    .sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));
+
+  const ov=document.createElement('div');
+  ov.className='overlay';
+
+  ov.innerHTML=`
+    <div class="modal">
+
+      <div class="modal-head">
+        <div>
+          <h2>${esc(c.company_name)}</h2>
+          <div class="muted">
+            ${esc(c.contact_name||'')}
+            ${c.position?' · '+esc(c.position):''}
+          </div>
+        </div>
+
+        <button id="close">×</button>
+      </div>
+
+      <div class="detail-grid">
+
+        <div class="stack">
+
+          <div class="field">
+            <label>Контакт</label>
+            <input id="contact" value="${esc(c.contact_name||'')}">
+          </div>
+
+          <div class="field">
+            <label>Должность</label>
+            <input id="position" value="${esc(c.position||'')}">
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input id="email" value="${esc(c.email||'')}">
+          </div>
+
+          <div class="field">
+            <label>Телефон</label>
+            <input id="phone" value="${esc(c.phone||'')}">
+          </div>
+
+          <div class="field">
+            <label>Telegram</label>
+            <input id="telegram" value="${esc(c.telegram||'')}">
+          </div>
+
+          <div class="field">
+            <label>MAX</label>
+            <input id="max_contact" value="${esc(c.max_contact||'')}">
+          </div>
+
+          <div class="field">
+            <label>Сайт</label>
+            <input id="website" value="${esc(c.website||'')}">
+          </div>
+
+          <div class="field">
+            <label>ИНН</label>
+            <input id="inn" value="${esc(c.inn||'')}">
+          </div>
+
+        </div>
+
+        <div class="stack">
+
+          <div class="field">
+            <label>Воронка</label>
+            <select id="pipe">
+              ${Object.entries(PIPE).map(
+                ([k,v])=>`<option value="${k}">${v}</option>`
+              ).join('')}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Этап</label>
+            <select id="stage"></select>
+          </div>
+
+          <div class="field">
+            <label>Потенциал, должников</label>
+            <input id="pot" type="number" value="${c.potential_debtors??''}">
+          </div>
+
+          <div class="field">
+            <label>Потенциальная выручка</label>
+            <input id="rev" type="number" value="${c.estimated_revenue??''}">
+          </div>
+
+          <div class="field">
+            <label>Согласованный срок</label>
+            <input id="agreed" type="date" value="${c.agreed_date||''}">
+          </div>
+
+          <div class="field">
+            <label>Заметки</label>
+            <textarea id="notes">${esc(c.notes||'')}</textarea>
+          </div>
+
+          <button class="primary" id="save">Сохранить</button>
+
+        </div>
+
+      </div>
+
+      <div class="section">
+
+        <div class="toolbar">
+          <b>Открытые задачи</b>
+          <span class="grow"></span>
+        </div>
+
+        ${
+          tasks.length
+          ?`
+            <div class="task-list">
+              ${tasks.map(t=>`
+                <div class="task">
+                  <div class="task-main">
+                    <div class="task-title">${esc(t.title)}</div>
+                    <div class="task-sub">
+                      ${esc(t.kind)} · ${dt(t.due_at)}
+                    </div>
+                  </div>
+                  <button data-done="${t.id}">Готово</button>
+                </div>
+              `).join('')}
+            </div>
+          `
+          :'<div class="empty">Нет открытых задач</div>'
+        }
+
+      </div>
+
+      <div class="section">
+
+        <div class="toolbar">
+          <b>Новая задача</b>
+          <span class="grow"></span>
+        </div>
+
+        <div class="detail-grid">
+
+          <div class="field">
+            <label>Название</label>
+            <input id="taskTitle" placeholder="Получить документы">
+          </div>
+
+          <div class="field">
+            <label>Срок</label>
+            <input id="taskDue" type="datetime-local">
+          </div>
+
+        </div>
+
+        <div class="field">
+          <label>Тип</label>
+
+          <select id="taskKind">
+            <option value="documents">Документы</option>
+            <option value="follow_up">Напоминание</option>
+            <option value="call">Звонок</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+
+        <button id="addTask">Добавить задачу</button>
+
+      </div>
+
+      <div class="section">
+
+        <div class="toolbar">
+          <b>История</b>
+          <span class="grow"></span>
+        </div>
+
+        ${
+          acts.map(a=>`
+            <div class="activity">
+              <div class="activity-head">
+                <span>${esc(a.kind)}</span>
+                <span>${dt(a.created_at)}</span>
+              </div>
+              <div>${esc(a.text)}</div>
+            </div>
+          `).join('')||
+          '<div class="empty">История пуста</div>'
+        }
+
+        <div class="field" style="margin-top:10px">
+          <label>Добавить запись</label>
+          <textarea id="actText" placeholder="Созвонились, документы обещаны до пятницы"></textarea>
+        </div>
+
+        <button id="addAct">Добавить запись</button>
+
+      </div>
+
+    </div>
+  `;
+
+  document.body.append(ov);
+
+  const pipe=ov.querySelector('#pipe');
+  const stage=ov.querySelector('#stage');
+
+  pipe.value=c.pipeline;
+
+  const refreshStages=()=>{
+    stage.innerHTML=STAGES[pipe.value]
+      .map(([k,l])=>`<option value="${k}">${l}</option>`)
+      .join('');
+
+    stage.value=
+      pipe.value===c.pipeline
+      ?c.stage
+      :STAGES[pipe.value][0][0];
+  };
+
+  refreshStages();
+
+  pipe.onchange=refreshStages;
+
+  ov.querySelector('#close').onclick=()=>ov.remove();
+
+  ov.onclick=e=>{
+    if(e.target===ov)ov.remove();
+  };
+
+  ov.querySelector('#save').onclick=async()=>{
+    const patch={
+      contact_name:ov.querySelector('#contact').value.trim(),
+      position:ov.querySelector('#position').value.trim(),
+      email:ov.querySelector('#email').value.trim(),
+      phone:ov.querySelector('#phone').value.trim(),
+      telegram:ov.querySelector('#telegram').value.trim(),
+      max_contact:ov.querySelector('#max_contact').value.trim(),
+      website:ov.querySelector('#website').value.trim(),
+      inn:ov.querySelector('#inn').value.trim(),
+      pipeline:pipe.value,
+      stage:stage.value,
+      potential_debtors:Number(ov.querySelector('#pot').value)||null,
+      estimated_revenue:Number(ov.querySelector('#rev').value)||null,
+      agreed_date:ov.querySelector('#agreed').value||null,
+      notes:ov.querySelector('#notes').value
+    };
+
+    const {data:{user}}=await sb.auth.getUser();
+
+    const {error}=await sb
+      .from('clients')
+      .update(patch)
+      .eq('id',id);
+
+    if(error){
+      toast(error.message);
+    }else{
+      await sb.from('activities').insert({
+        client_id:id,
+        kind:'stage_change',
+        text:`Карточка клиента обновлена пользователем ${user.email}`,
+        created_by:user.id
+      });
+
+      ov.remove();
+      await reloadAll();
+    }
+  };
+
+  ov.querySelector('#addTask').onclick=async()=>{
+    const title=ov.querySelector('#taskTitle').value.trim();
+    const due=ov.querySelector('#taskDue').value;
+
+    if(!title||!due){
+      toast('Заполни название и срок');
+      return;
+    }
+
+    const {data:{user}}=await sb.auth.getUser();
+
+    const {error}=await sb.from('tasks').insert({
+      client_id:id,
+      title,
+      due_at:new Date(due).toISOString(),
+      kind:ov.querySelector('#taskKind').value,
+      status:'open',
+      owner_id:user.id,
+      created_by:user.id
+    });
+
+    if(error){
+      toast(error.message);
+    }else{
+      ov.remove();
+      await reloadAll();
+      openClient(id);
+    }
+  };
+
+  ov.querySelector('#addAct').onclick=async()=>{
+    const text=ov.querySelector('#actText').value.trim();
+
+    if(!text)return;
+
+    const {data:{user}}=await sb.auth.getUser();
+
+    const {error}=await sb.from('activities').insert({
+      client_id:id,
+      text,
+      created_by:user.id,
+      kind:'note'
+    });
+
+    if(error){
+      toast(error.message);
+    }else{
+      ov.remove();
+      await reloadAll();
+      openClient(id);
+    }
+  };
+
+  ov.querySelectorAll('[data-done]').forEach(b=>
+    b.onclick=async()=>{
+      const {error}=await sb
+        .from('tasks')
+        .update({status:'done'})
+        .eq('id',b.dataset.done);
+
+      if(error){
+        toast(error.message);
+      }else{
+        ov.remove();
+        await reloadAll();
+        openClient(id);
+      }
+    }
+  );
+}
+
+async function newClient(){
+  const ov=document.createElement('div');
+
+  ov.className='overlay';
+
+  ov.innerHTML=`
+    <div class="modal small">
+
+      <div class="modal-head">
+        <h3>Новый клиент</h3>
+        <button id="x">×</button>
+      </div>
+
+      <div class="stack">
+
+        <div class="field">
+          <label>Компания</label>
+          <input id="company">
+        </div>
+
+        <div class="field">
+          <label>Контакт</label>
+          <input id="contact">
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input id="email">
+        </div>
+
+        <div class="field">
+          <label>Телефон</label>
+          <input id="phone">
+        </div>
+
+        <div class="field">
+          <label>Сайт</label>
+          <input id="website">
+        </div>
+
+        <div class="field">
+          <label>Воронка</label>
+
+          <select id="pipe">
+            ${Object.entries(PIPE).map(
+              ([k,v])=>`<option value="${k}">${v}</option>`
+            ).join('')}
+          </select>
+        </div>
+
+        <button class="primary" id="create">Создать</button>
+
+      </div>
+
+    </div>
+  `;
+
+  document.body.append(ov);
+
+  ov.querySelector('#x').onclick=()=>ov.remove();
+
+  ov.querySelector('#create').onclick=async()=>{
+    const company=ov.querySelector('#company').value.trim();
+
+    if(!company){
+      toast('Укажи компанию');
+      return;
+    }
+
+    const {data:{user}}=await sb.auth.getUser();
+    const pipe=ov.querySelector('#pipe').value;
+
+    const {error}=await sb.from('clients').insert({
+      company_name:company,
+      contact_name:ov.querySelector('#contact').value.trim(),
+      email:ov.querySelector('#email').value.trim(),
+      phone:ov.querySelector('#phone').value.trim(),
+      website:ov.querySelector('#website').value.trim(),
+      pipeline:pipe,
+      stage:STAGES[pipe][0][0],
+      owner_id:user.id
+    });
+
+    if(error){
+      toast(error.message);
+    }else{
+      ov.remove();
+      await reloadAll();
+
+      openClient(
+        state.clients.find(c=>c.company_name===company)?.id
+      );
+    }
+  };
+}
+
+async function boot(){
+  sb=window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  const {
+    data:{session}
+  }=await sb.auth.getSession();
+
+  if(session){
+    await startApp();
+  }else{
+    showLogin();
+  }
+
+  sb.auth.onAuthStateChange((_e,s)=>{
+    if(s?.user&&!state.user){
+      startApp();
+    }
+  });
+}
+
 boot();
 </script>
 </body>
