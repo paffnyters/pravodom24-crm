@@ -1,1104 +1,271 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>PravoDom24 CRM</title>
-  <meta name="theme-color" content="#0b1220">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
-  <style>
-    :root{--bg:#0b1220;--panel:#111827;--panel2:#0f172a;--panel3:#0c1422;--line:#263244;--text:#e8edf5;--muted:#9aa8ba;--accent:#7aa7ff;--good:#69d69a;--warn:#f0ca62;--danger:#ef8d8d;--shadow:0 14px 40px rgba(0,0,0,.28);--radius:14px}
-    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    button,input,textarea,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#182234;color:var(--text);border-radius:10px;padding:9px 12px}button:hover{background:#22304a}button.primary{background:var(--accent);color:#08111f;border-color:transparent;font-weight:700}button.ghost{background:transparent}button.danger{background:#2a1717;border-color:#633434}.hidden{display:none!important}
-    .center{min-height:100vh;display:grid;place-items:center;padding:24px}.auth{width:min(460px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:28px}.brand{font-size:24px;font-weight:850}.brand span{color:var(--accent)}.stack{display:grid;gap:12px}.field{display:grid;gap:6px}.field label{font-size:12px;color:var(--muted)}input,textarea,select{width:100%;background:#0a1321;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;outline:none}select{color-scheme:dark}input:focus,textarea:focus,select:focus{border-color:#5d7db2}textarea{min-height:100px;resize:vertical}.error{color:var(--danger);min-height:20px}.hint{font-size:12px;color:var(--muted)}
-    .app{min-height:100vh;display:grid;grid-template-columns:230px 1fr}.sidebar{background:var(--panel3);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px}.sidebar .brand{margin-bottom:12px}.nav{width:100%;text-align:left;background:transparent;border-color:transparent;margin:3px 0}.nav.active{background:#16243a;border-color:#20334f}.sidebar-foot{margin-top:auto;display:grid;gap:8px}.main{min-width:0}.topbar{min-height:72px;background:rgba(11,18,32,.94);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:10px 18px;gap:16px;position:sticky;top:0;z-index:20;backdrop-filter:blur(9px)}.topbar-actions{display:grid;grid-template-columns:minmax(280px,1fr) auto auto;gap:8px;align-items:center;flex:1;min-width:0}.topbar-actions #search{min-width:0;width:100%}.topbar-actions #pipeline{width:170px!important}.topbar-actions #newClient{white-space:nowrap;min-width:110px}.topbar .view-title{flex:0 0 auto}@media (max-width:900px){.topbar{align-items:flex-start;flex-direction:column}.topbar-actions{width:100%;grid-template-columns:minmax(0,1fr) auto auto}}@media (max-width:650px){.topbar-actions{grid-template-columns:1fr 1fr}.topbar-actions #search{grid-column:1/-1}.topbar-actions #pipeline,.topbar-actions #newClient{width:100%!important}}.content{padding:18px;display:grid;gap:18px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}.view-title{display:grid;gap:2px}.view-title h1{margin:0;font-size:22px}.muted{color:var(--muted)}
-    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px}.stat span{font-size:12px;color:var(--muted)}.stat b{display:block;font-size:24px;margin-top:4px}.overdue{color:var(--danger)}
-    .board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,1fr);gap:12px;overflow-x:auto;padding-bottom:4px}.col{min-height:480px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius);padding:10px}.colhead{display:flex;justify-content:space-between;align-items:center;padding:4px 2px 10px}.pill{border:1px solid var(--line);background:#172236;color:var(--muted);border-radius:999px;padding:3px 8px;font-size:11px}.cards{display:grid;gap:8px}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px}.card:hover{border-color:#41556e}.card-title{font-weight:760}.card-meta{font-size:12px;color:var(--muted);margin-top:2px}.card-foot{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.tag{font-size:11px;border-radius:999px;padding:4px 7px;background:#162236;border:1px solid var(--line);color:#c2ccda}.tag.good{background:#133722;border-color:#2c6d45;color:#b8f0d0}.tag.warn{background:#2b230e;border-color:#65521d;color:#f5dc88}.tag.bad{background:#331919;border-color:#6d3838;color:#ffc3c3}
-    .table-wrap{background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius);overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.table th{font-size:12px;color:var(--muted)}.table tr:hover td{background:#101a2b}.empty{padding:30px;text-align:center;color:var(--muted)}
-    .task-list{display:grid;gap:8px}.task{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px}.task-main{flex:1}.task-title{font-weight:700}.task-sub{font-size:12px;color:var(--muted)}
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:70;display:grid;place-items:center;padding:18px}.modal{width:min(1050px,100%);max-height:94vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:18px}.modal.small{width:min(560px,100%)}.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}.modal-head h2,.modal-head h3{margin:0}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.section{border-top:1px solid var(--line);margin-top:16px;padding-top:16px}.activity{padding:10px 0;border-bottom:1px solid var(--line)}.activity-head{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted)}.toast{position:fixed;right:18px;bottom:18px;z-index:120;background:#0e1a2b;border:1px solid var(--line);border-radius:10px;padding:11px 14px;box-shadow:var(--shadow);max-width:min(480px,calc(100vw - 36px))}
-    .statusbar{position:fixed;left:18px;bottom:18px;background:#0e1a2b;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px;color:var(--muted);z-index:60}.statusbar.ok{color:#b9efd0}.statusbar.warn{color:#f0d889}.statusbar.bad{color:#ffc3c3}
-    @media(max-width:980px){.app{grid-template-columns:76px 1fr}.sidebar{padding:10px}.sidebar .brand{font-size:15px;text-align:center}.nav{text-align:center;font-size:0}.nav::first-letter{font-size:18px}.user-email{display:none}.stats{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:680px){.topbar{height:auto;align-items:flex-start;flex-direction:column;padding:12px}.content{padding:12px}.stats{grid-template-columns:1fr}.board{grid-auto-columns:86vw}.detail-grid{grid-template-columns:1fr}.task{align-items:flex-start;flex-direction:column}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PravoDom24 CRM v2</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f5f6f8;--panel:#fff;--panel2:#f0f2f5;--text:#15171a;--muted:#747a83;
+  --line:#e2e5e9;--accent:#111827;--accentText:#fff;--danger:#b42318;--shadow:0 8px 30px rgba(16,24,40,.07);
+}
+@media(prefers-color-scheme:dark){
+  body.system{color-scheme:dark}
+}
+body.dark{
+  --bg:#111315;--panel:#191c20;--panel2:#22262b;--text:#f4f5f7;--muted:#9ba2ac;
+  --line:#30353c;--accent:#f4f5f7;--accentText:#111315;--danger:#ff8a80;--shadow:0 12px 40px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:220px 1fr}
+.sidebar{border-right:1px solid var(--line);background:var(--panel);padding:18px 12px;display:flex;flex-direction:column;gap:18px}
+.logo{font-weight:800;font-size:18px;padding:4px 10px}.logo small{display:block;color:var(--muted);font-weight:500;font-size:11px;margin-top:2px}
+.nav{display:grid;gap:5px}.nav button,.bottomnav button{border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:11px;text-align:left}.nav button.active,.nav button:hover,.bottomnav button.active{background:var(--panel2);color:var(--text)}
+.sidebar-bottom{margin-top:auto}.theme-select{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:9px;border-radius:10px}
+.user{font-size:12px;color:var(--muted);padding:0 10px;word-break:break-word}
+main{min-width:0;padding:24px 28px 90px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}.top h1{margin:0;font-size:25px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 13px;border-radius:10px}.btn.primary{background:var(--accent);color:var(--accentText);border-color:var(--accent)}.btn.danger{color:var(--danger)}
+.search{width:min(360px,100%);border:1px solid var(--line);background:var(--panel);color:var(--text);padding:11px 13px;border-radius:11px}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(270px,300px);gap:12px;overflow-x:auto;padding-bottom:8px}
+.column{background:var(--panel2);border:1px solid var(--line);border-radius:15px;min-height:420px;padding:10px}
+.column-head{display:flex;align-items:center;justify-content:space-between;padding:5px 4px 10px}.column-title{font-weight:700}.count{color:var(--muted);font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:9px;box-shadow:0 2px 10px rgba(0,0,0,.025)}
+.card:hover{border-color:#aeb4bc}.card-title{font-weight:750;line-height:1.25}.card-sub{color:var(--muted);font-size:12px;margin-top:4px}
+.card-action{width:100%;margin-top:11px}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chip{font-size:11px;color:var(--muted);background:var(--panel2);border-radius:999px;padding:4px 7px}
+.empty{color:var(--muted);font-size:13px;padding:18px 5px;text-align:center}.hidden{display:none!important}
+.list{display:grid;gap:9px}.row{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;justify-content:center;z-index:10}.overlay.show{display:flex}
+.modal{width:min(760px,100%);max-height:92vh;overflow:auto;background:var(--panel);border-radius:20px 20px 0 0;padding:20px;box-shadow:var(--shadow)}
+.modal-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.modal h2{margin:0 0 5px}.close{border:0;background:var(--panel2);color:var(--text);border-radius:9px;padding:8px 11px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:11px;color:var(--muted)}.field input,.field textarea,.field select{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px;border-radius:9px}.field textarea{min-height:90px;resize:vertical}
+.section{margin-top:18px;padding-top:15px;border-top:1px solid var(--line)}.section h3{margin:0 0 10px;font-size:14px}
+.source-box{display:flex;gap:7px;flex-wrap:wrap}.source{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;padding:8px 10px}.source.active{background:var(--accent);color:var(--accentText)}
+.group{border:2px solid var(--line);border-radius:17px;padding:9px;margin-bottom:12px}.group-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:3px}.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}.group .card{margin:0}.multi{display:flex;gap:8px;flex-wrap:wrap}
+.bottomnav{display:none}.login{min-height:100vh;display:grid;place-items:center;padding:20px}.loginbox{width:min(400px,100%);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}.loginbox h1{margin-top:0}.loginbox form{display:grid;gap:10px}.loginbox input{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:12px;border-radius:10px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--accent);color:var(--accentText);padding:10px 14px;border-radius:10px;display:none;z-index:30;font-size:13px}.toast.show{display:block}
+@media(max-width:760px){
+  .app{display:block}.sidebar{display:none}main{padding:16px 13px 86px}.top h1{font-size:21px}.top{align-items:flex-start}.board{grid-auto-columns:calc(100vw - 26px)}.bottomnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);z-index:8;padding:6px 5px env(safe-area-inset-bottom)}.bottomnav button{text-align:center;font-size:11px;padding:8px 4px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal{max-height:95vh}.row{align-items:flex-start;flex-direction:column}
+}
+</style>
 </head>
-<body>
+<body class="system">
 <div id="root"></div>
-<div id="statusbar" class="statusbar hidden"></div>
+<div id="toast" class="toast"></div>
 
 <script>
 const SUPABASE_URL='https://ncuthxvxiwghjgduchhc.supabase.co';
 const SUPABASE_KEY='sb_publishable_30uyWrQ06THITcEIVe4WTw_2BeQSGnp';
-
 let sb=null;
+const state={view:'sales',user:null,pipelines:[],stages:[],orgs:[],cases:[],groups:[],search:'',current:null,theme:'system'};
 
-const state={
-  view:'board',
-  pipeline:'sales',
-  clients:[],
-  tasks:[],
-  activities:[],
-  current:null,
-  user:null,
-  subscription:null,
-  search:'',
-  loading:false
-};
+const SOURCE_LABEL={mailing:'с рассылок',dmitry_base:'база клиентов Дмитрия',not_set:'не установлено'};
 
-const STAGES={
-  sales:[
-    ['new','Новый контакт'],
-    ['replied','Ответил'],
-    ['interested','Интерес'],
-    ['terms','Обсуждаем условия'],
-    ['docs_promised','Документы обещаны'],
-    ['docs_received','Документы получены'],
-    ['first_order','Первый заказ'],
-    ['regular','Постоянный клиент']
-  ],
-  active:[
-    ['waiting_docs','Ждём документы'],
-    ['docs_received','Документы получены'],
-    ['in_work','В работе'],
-    ['needs_info','Нужна информация'],
-    ['result','Результат'],
-    ['next_order','Следующий заказ']
-  ],
-  repeat:[
-    ['client','Есть клиент'],
-    ['new_debt','Новая задолженность'],
-    ['remind','Напомнить'],
-    ['new_package','Получен новый пакет'],
-    ['in_work','В работе']
-  ]
-};
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove('show'),2200)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fmtMoney(v){if(v===null||v===undefined||v==='')return '';return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(Number(v))+' ₽'}
+function pipelineFor(type){return state.pipelines.filter(p=>p.entity_type===type&&p.active)}
+function stagesFor(pid){return state.stages.filter(s=>s.pipeline_id===pid&&s.active).sort((a,b)=>a.sort_order-b.sort_order)}
+async function ensureMember(){const {data,error}=await sb.rpc('is_crm_member');if(error)throw error;return data===true}
 
-const PIPE={
-  sales:'Продажи',
-  active:'Действующие клиенты',
-  repeat:'Повторные продажи'
-};
-
-const $=s=>document.querySelector(s);
-const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({
-  '&':'&amp;',
-  '<':'&lt;',
-  '>':'&gt;',
-  '"':'&quot;',
-  "'":'&#039;'
-}[m]));
-
-const money=v=>
-  v==null||v===''?'':
-  new Intl.NumberFormat('ru-RU',{
-    maximumFractionDigits:0
-  }).format(Number(v))+' ₽';
-
-const dt=v=>
-  v?new Date(v).toLocaleString('ru-RU',{
-    dateStyle:'short',
-    timeStyle:'short'
-  }):'';
-
-const stageName=c=>
-  (STAGES[c.pipeline]||[]).find(x=>x[0]===c.stage)?.[1]||
-  c.stage||
-  '';
-
-function toast(text){
-  let t=$('.toast');
-  if(!t){
-    t=document.createElement('div');
-    t.className='toast';
-    document.body.append(t);
-  }
-  t.textContent=text;
-  t.classList.remove('hidden');
-  clearTimeout(toast.timer);
-  toast.timer=setTimeout(()=>t.classList.add('hidden'),4500);
+function applyTheme(){
+  document.body.classList.remove('dark','system');
+  if(state.theme==='dark')document.body.classList.add('dark');
+  else if(state.theme==='system')document.body.classList.add('system');
+  localStorage.setItem('pd24_theme',state.theme);
 }
-
-function status(text,kind=''){
-  const s=$('#statusbar');
-  s.textContent=text;
-  s.className='statusbar '+kind;
-  s.classList.remove('hidden');
-}
-
 function showLogin(){
-  document.body.innerHTML=`
-    <div class="center">
-      <div class="auth stack">
-        <div class="brand">PravoDom<span>24</span> CRM</div>
-        <div class="muted">Вход в общую CRM</div>
+  document.getElementById('root').innerHTML=`<div class="login"><div class="loginbox">
+  <h1>PravoDom24</h1><p style="color:var(--muted)">CRM v2</p>
+  <form id="loginForm"><input id="email" type="email" placeholder="Email" required><input id="password" type="password" placeholder="Пароль" required><button class="btn primary">Войти</button></form>
+  </div></div>`;
+  document.getElementById('loginForm').onsubmit=async e=>{e.preventDefault();try{const {error}=await sb.auth.signInWithPassword({email:email.value,password:password.value});if(error)throw error;await startApp()}catch(x){toast(x.message||'Ошибка входа')}};
+}
+function nav(){
+ return `<aside class="sidebar"><div class="logo">PravoDom24<small>CRM v2</small></div>
+ <div class="nav">
+  <button class="${state.view==='sales'?'active':''}" onclick="setView('sales')">Продажи</button>
+  <button class="${state.view==='legal'?'active':''}" onclick="setView('legal')">Юридическая работа</button>
+  <button class="${state.view==='clients'?'active':''}" onclick="setView('clients')">Клиенты</button>
+  <button class="${state.view==='tasks'?'active':''}" onclick="setView('tasks')">Задачи</button>
+  <button class="${state.view==='settings'?'active':''}" onclick="setView('settings')">Настройки</button>
+ </div>
+ <div class="sidebar-bottom"><select class="theme-select" onchange="state.theme=this.value;applyTheme()"><option value="system" ${state.theme==='system'?'selected':''}>⚙️ Тема системы</option><option value="light" ${state.theme==='light'?'selected':''}>☀️ Дневная</option><option value="dark" ${state.theme==='dark'?'selected':''}>🌙 Ночная</option></select><div class="user" style="margin-top:10px">${esc(state.user?.email||'')}</div></div></aside>`
+}
+function bottomNav(){return `<nav class="bottomnav">
+<button class="${state.view==='sales'?'active':''}" onclick="setView('sales')">Продажи</button>
+<button class="${state.view==='legal'?'active':''}" onclick="setView('legal')">Юр. работа</button>
+<button class="${state.view==='tasks'?'active':''}" onclick="setView('tasks')">Задачи</button>
+<button class="${state.view==='settings'?'active':''}" onclick="setView('settings')">Ещё</button></nav>`}
 
-        <div class="field">
-          <label>Email</label>
-          <input id="email" type="email" autocomplete="username">
-        </div>
+function shell(){
+ document.getElementById('root').innerHTML=`<div class="app">${nav()}<main id="main"></main></div>${bottomNav()}`;
+ render();
+}
+function setView(v){state.view=v;state.search='';shell()}
+function header(title,button=''){
+ return `<div class="top"><div><h1>${title}</h1></div><div class="actions">${button}</div></div>`
+}
+function searchBar(){return `<input class="search" placeholder="Поиск" value="${esc(state.search)}" oninput="state.search=this.value;render()">`}
 
-        <div class="field">
-          <label>Пароль</label>
-          <input id="pass" type="password" autocomplete="current-password">
-        </div>
-
-        <button class="primary" id="login">Войти</button>
-
-        <div id="msg" class="error"></div>
-      </div>
-    </div>
-  `;
-
-  $('#login').onclick=async()=>{
-    const {error}=await sb.auth.signInWithPassword({
-      email:$('#email').value.trim(),
-      password:$('#pass').value
-    });
-
-    if(error){
-      $('#msg').textContent=error.message;
-    }else{
-      await startApp();
-    }
-  };
+function render(){
+ const main=document.getElementById('main'); if(!main)return;
+ if(state.view==='sales')renderSales(main);
+ else if(state.view==='legal')renderLegal(main);
+ else if(state.view==='clients')renderClients(main);
+ else if(state.view==='tasks')renderTasks(main);
+ else renderSettings(main);
+}
+function renderSales(main){
+ const p=pipelineFor('organization')[0];
+ const stages=stagesFor(p?.id);
+ main.innerHTML=header('Продажи',`<button class="btn primary" onclick="newOrg()">+ Организация</button>`)+
+ `<div class="toolbar">${searchBar()}<div class="muted">Организации</div></div><div class="board">${stages.map(s=>`
+ <section class="column"><div class="column-head"><span class="column-title">${esc(s.name)}</span><span class="count">${state.orgs.filter(o=>o.sales_stage_id===s.id).length}</span></div>
+ ${state.orgs.filter(o=>o.sales_stage_id===s.id&&matchOrg(o)).map(orgCard).join('')||'<div class="empty">Пусто</div>'}</section>`).join('')||'<div class="empty">Создайте воронку «Продажи» в настройках.</div>'}</div>`;
+}
+function matchOrg(o){const q=state.search.toLowerCase();return !q||[o.name,o.contact_name,o.phone,o.email,o.inn].filter(Boolean).some(x=>String(x).toLowerCase().includes(q))}
+function orgCard(o){
+ return `<article class="card" onclick="openOrg('${o.id}')"><div class="card-title">${esc(o.name)}</div>${o.contact_name?`<div class="card-sub">${esc(o.contact_name)}</div>`:''}
+ ${o.source?`<div class="meta"><span class="chip">${esc(SOURCE_LABEL[o.source])}</span></div>`:''}
+ ${o.phone?`<div class="card-sub" style="margin-top:9px">${esc(o.phone)}</div>`:''}
+ <button class="btn card-action" onclick="event.stopPropagation();quickOrg('${o.id}')">Открыть</button></article>`
 }
 
-async function ensureMember(){
-  const {data,error}=await sb.rpc('is_crm_member');
-
-  if(error)throw error;
-
-  return data===true;
+function renderLegal(main){
+ const ps=pipelineFor('case');
+ main.innerHTML=header('Юридическая работа',`<button class="btn" onclick="newLegalPipeline()">+ Воронка</button><button class="btn primary" onclick="newCase()">+ Дело</button>`);
+ if(!ps.length){main.innerHTML+=`<div class="card"><div class="card-title">Здесь будут юридические воронки Дмитрия</div><div class="card-sub">Можно создать несколько — под разные процессы.</div><button class="btn primary" style="margin-top:12px" onclick="newLegalPipeline()">Создать первую воронку</button></div>`;return}
+ main.innerHTML+=ps.map(p=>legalPipelineHtml(p)).join('');
+}
+function legalPipelineHtml(p){
+ const stages=stagesFor(p.id);
+ return `<section style="margin-bottom:26px"><div class="toolbar"><div><h2 style="margin:0;font-size:18px">${esc(p.name)}</h2><div class="card-sub">${state.cases.filter(c=>c.legal_pipeline_id===p.id).length} дел</div></div><div class="actions"><button class="btn" onclick="renamePipeline('${p.id}')">Переименовать</button><button class="btn danger" onclick="deletePipeline('${p.id}')">Удалить</button></div></div>
+ <div class="board">${stages.map(s=>{
+ const cs=state.cases.filter(c=>c.legal_stage_id===s.id&&matchCase(c));
+ return `<section class="column"><div class="column-head"><span class="column-title">${esc(s.name)}</span><span class="count">${cs.length}</span></div>${groupedCards(cs)}</section>`}).join('')}</div>
+ <div class="actions" style="margin-top:8px"><button class="btn" onclick="newStage('${p.id}')">+ Колонка</button></div></section>`
+}
+function groupedCards(cs){
+ const groups={ungrouped:[]};
+ cs.forEach(c=>{if(c.group_id){(groups[c.group_id]??=[]).push(c)}else groups.ungrouped.push(c)});
+ let html='';
+ Object.entries(groups).forEach(([gid,items])=>{
+   if(gid==='ungrouped'){html+=items.map(caseCard).join('')||'';return}
+   const g=state.groups.find(x=>x.id===gid);
+   html+=`<div class="group"><div class="group-head"><strong>${esc(g?.name||'Группа')}</strong><button class="btn" onclick="event.stopPropagation();openGroup('${gid}')">Открыть группу</button></div><div class="group-grid">${items.map(caseCard).join('')}</div></div>`
+ });
+ return html||'<div class="empty">Пусто</div>'
+}
+function matchCase(c){const q=state.search.toLowerCase();return !q||[c.title,c.debtor_name,c.debtor_identifier].filter(Boolean).some(x=>String(x).toLowerCase().includes(q))}
+function caseCard(c){
+ return `<article class="card" onclick="openCase('${c.id}')"><div class="card-title">${esc(c.title)}</div>${c.debtor_name?`<div class="card-sub">${esc(c.debtor_name)}</div>`:''}
+ ${c.source?`<div class="meta"><span class="chip">${esc(SOURCE_LABEL[c.source])}</span></div>`:''}
+ ${c.profit!==null&&c.profit!==undefined?`<div class="card-sub" style="margin-top:8px">${fmtMoney(c.profit)}</div>`:''}
+ <button class="btn card-action" onclick="event.stopPropagation();openCase('${c.id}')">Открыть</button></article>`
 }
 
-async function startApp(){
-  const {
-    data:{user}
-  }=await sb.auth.getUser();
-
-  state.user=user;
-
-  if(!user){
-    showLogin();
-    return;
-  }
-
-  try{
-    if(!(await ensureMember())){
-      await sb.auth.signOut();
-      showLogin();
-      toast('Пользователь не активирован в CRM');
-      return;
-    }
-  }catch(e){
-    showLogin();
-    toast(e.message);
-    return;
-  }
-
-  renderShell();
-  await reloadAll();
-  subscribeRealtime();
-
-  status(`В сети · ${user.email}`,'ok');
+function renderClients(main){
+ main.innerHTML=header('Клиенты',`<button class="btn primary" onclick="newOrg()">+ Организация</button>`)+`<div class="toolbar">${searchBar()}</div><div class="list">${state.orgs.filter(matchOrg).map(o=>`<div class="row" onclick="openOrg('${o.id}')"><div><strong>${esc(o.name)}</strong><div class="card-sub">${esc(SOURCE_LABEL[o.source||'not_set'])}</div></div><button class="btn" onclick="event.stopPropagation();openOrg('${o.id}')">Открыть</button></div>`).join('')||'<div class="empty">Ничего не найдено</div>'}</div>`
+}
+function renderTasks(main){
+ main.innerHTML=header('Задачи')+`<div class="card"><div class="card-title">Задачи v2</div><div class="card-sub">Подключим существующие задачи к новой модели организаций и дел без потери истории.</div></div>`
+}
+function renderSettings(main){
+ main.innerHTML=header('Настройки')+
+ `<section class="card"><div class="card-title">Воронки</div><div class="card-sub">Продажи — системная воронка. Юридических воронок может быть несколько.</div>
+ <div class="list" style="margin-top:12px">${state.pipelines.map(p=>`<div class="row"><div><strong>${esc(p.name)}</strong><div class="card-sub">${p.entity_type==='organization'?'Организации':'Дела'}</div></div><div class="actions">${p.is_system?'':`<button class="btn" onclick="renamePipeline('${p.id}')">Переименовать</button><button class="btn danger" onclick="deletePipeline('${p.id}')">Удалить</button>`}</div></div>`).join('')}</div>
+ <button class="btn primary" style="margin-top:12px" onclick="newLegalPipeline()">+ Юридическая воронка</button></section>
+ <section class="card"><div class="card-title">Шаблоны</div><div class="card-sub">Перенос данных из одной или нескольких карточек в шаблонные документы.</div><button class="btn" style="margin-top:10px" onclick="toast('Функция «Создать шаблон» — в разработке')">Создать шаблон</button></section>
+ <section class="card"><div class="card-title">Тема</div><select class="theme-select" style="max-width:260px" onchange="state.theme=this.value;applyTheme()"><option value="system">⚙️ Тема системы</option><option value="light">☀️ Дневная</option><option value="dark">🌙 Ночная</option></select></section>`
 }
 
-function renderShell(){
-  document.body.innerHTML=`
-    <div class="app">
-      <aside class="sidebar">
-        <div class="brand">P<span>24</span></div>
-
-        <button class="nav active" data-view="board">Воронка</button>
-        <button class="nav" data-view="clients">Клиенты</button>
-        <button class="nav" data-view="tasks">Задачи</button>
-        <button class="nav" data-view="today">Сегодня</button>
-
-        <div class="sidebar-foot">
-          <div class="user-email muted">${esc(state.user.email)}</div>
-          <button id="logout">Выйти</button>
-        </div>
-      </aside>
-
-      <main class="main">
-        <header class="topbar">
-          <div class="view-title">
-            <h1 id="title">Воронка</h1>
-            <div class="muted" id="subtitle"></div>
-          </div>
-
-          <div class="topbar-actions">
-            <input id="search" placeholder="Поиск по клиентам" style="min-width:220px">
-
-            <select id="pipeline" style="width:auto">
-              <option value="sales">Продажи</option>
-              <option value="active">Действующие клиенты</option>
-              <option value="repeat">Повторные продажи</option>
-            </select>
-
-            <button class="primary" id="newClient">+ Клиент</button>
-          </div>
-        </header>
-
-        <section class="content" id="content"></section>
-      </main>
-    </div>
-  `;
-
-  document.querySelectorAll('[data-view]').forEach(b=>
-    b.onclick=()=>{
-      state.view=b.dataset.view;
-
-      document.querySelectorAll('[data-view]')
-        .forEach(x=>x.classList.toggle('active',x===b));
-
-      renderCurrent();
-    }
-  );
-
-  $('#pipeline').value=state.pipeline;
-
-  $('#pipeline').onchange=e=>{
-    state.pipeline=e.target.value;
-    renderCurrent();
-  };
-
-  $('#search').oninput=e=>{
-    state.search=e.target.value;
-    renderCurrent();
-  };
-
-  $('#newClient').onclick=newClient;
-
-  $('#logout').onclick=async()=>{
-    if(state.subscription){
-      sb.removeChannel(state.subscription);
-    }
-
-    await sb.auth.signOut();
-    location.reload();
-  };
+async function reload(){
+ const [{data:p,error:pe},{data:s,error:se},{data:o,error:oe},{data:c,error:ce},{data:g,error:ge}]=await Promise.all([
+  sb.from('crm_pipelines').select('*').eq('active',true).order('sort_order'),
+  sb.from('crm_pipeline_stages').select('*').eq('active',true).order('sort_order'),
+  sb.from('crm_organizations').select('*').is('deleted_at',null).order('created_at',{ascending:false}),
+  sb.from('crm_cases').select('*').is('deleted_at',null).order('created_at',{ascending:false}),
+  sb.from('crm_case_groups').select('*').order('created_at',{ascending:false})
+ ]);
+ for(const e of [pe,se,oe,ce,ge])if(e)throw e;
+ state.pipelines=p||[];state.stages=s||[];state.orgs=o||[];state.cases=c||[];state.groups=g||[];render();
 }
+function modal(html){document.querySelector('.overlay')?.remove();const d=document.createElement('div');d.className='overlay show';d.innerHTML=`<div class="modal">${html}</div>`;d.onclick=e=>{if(e.target===d)d.remove()};document.body.appendChild(d)}
+function closeModal(){document.querySelector('.overlay')?.remove()}
 
-function filtered(){
-  const q=state.search.trim().toLowerCase();
-
-  return state.clients.filter(c=>{
-    const pipe=c.pipeline===state.pipeline;
-
-    const text=[
-      c.company_name,
-      c.contact_name,
-      c.email,
-      c.phone,
-      c.inn
-    ].join(' ').toLowerCase();
-
-    return pipe&&(!q||text.includes(q));
-  });
+function sourceButtons(current='not_set',field='source'){
+ return `<div class="source-box">${Object.entries(SOURCE_LABEL).map(([k,v])=>`<button type="button" class="source ${current===k?'active':''}" data-source="${k}" onclick="this.parentNode.querySelectorAll('.source').forEach(x=>x.classList.remove('active'));this.classList.add('active');this.parentNode.dataset.value='${k}'">${esc(v)}</button>`).join('')}</div>`
 }
-
-function renderCurrent(){
-  if(state.view==='board')renderBoard();
-  else if(state.view==='clients')renderClients();
-  else if(state.view==='tasks')renderTasks();
-  else renderToday();
+function newOrg(){
+ modal(`<div class="modal-head"><div><h2>Новая организация</h2><div class="card-sub">Минимум данных сейчас. Остальное можно добавить позже.</div></div><button class="close" onclick="closeModal()">×</button></div>
+ <form id="orgForm" class="grid" style="margin-top:16px"><div class="field full"><label>Название организации</label><input name="name" required></div><div class="field"><label>Контакт</label><input name="contact_name"></div><div class="field"><label>Телефон</label><input name="phone"></div><div class="field"><label>Email</label><input name="email"></div><div class="field"><label>ИНН</label><input name="inn"></div><div class="field full"><label>Откуда пришёл</label><div id="orgSource" data-value="not_set">${sourceButtons()}</div></div><div class="field full"><label>Заметка</label><textarea name="notes"></textarea></div><div class="field full"><button class="btn primary">Создать</button></div></form>`);
+ document.getElementById('orgForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const p=pipelineFor('organization')[0],s=stagesFor(p?.id)[0];const {error}=await sb.from('crm_organizations').insert({name:f.get('name'),contact_name:f.get('contact_name')||null,phone:f.get('phone')||null,email:f.get('email')||null,inn:f.get('inn')||null,notes:f.get('notes')||null,source:document.getElementById('orgSource').dataset.value,owner_id:state.user.id,sales_pipeline_id:p?.id||null,sales_stage_id:s?.id||null});if(error)toast(error.message);else{closeModal();await reload();toast('Организация создана')}} 
 }
-
-function renderBoard(){
-  const cs=filtered();
-
-  $('#title').textContent=PIPE[state.pipeline];
-  $('#subtitle').textContent=`${cs.length} клиентов`;
-
-  const cols=STAGES[state.pipeline];
-
-  $('#content').innerHTML=`
-    <div class="toolbar">
-      <span class="muted">
-        Перетаскивание между этапами пока заменено быстрым выбором этапа в карточке
-      </span>
-    </div>
-
-    <div class="board">
-      ${cols.map(([k,l])=>{
-        const list=cs.filter(c=>c.stage===k);
-
-        return `
-          <div class="col">
-            <div class="colhead">
-              <b>${esc(l)}</b>
-              <span class="pill">${list.length}</span>
-            </div>
-
-            <div class="cards">
-              ${list.map(cardHtml).join('')||'<div class="empty">Пусто</div>'}
-            </div>
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
-
-  document.querySelectorAll('[data-client]')
-    .forEach(b=>b.onclick=()=>openClient(b.dataset.client));
+function newCase(){
+ const p=pipelineFor('case')[0];if(!p){toast('Сначала создайте юридическую воронку');newLegalPipeline();return}
+ const s=stagesFor(p.id)[0];
+ modal(`<div class="modal-head"><div><h2>Новое дело</h2><div class="card-sub">Отдельная карточка дела. Позже её можно объединить с другими делами в группу.</div></div><button class="close" onclick="closeModal()">×</button></div>
+ <form id="caseForm" class="grid" style="margin-top:16px"><div class="field full"><label>Название дела</label><input name="title" placeholder="Например: Должник Иванов" required></div><div class="field"><label>Должник</label><input name="debtor_name"></div><div class="field"><label>Идентификатор</label><input name="debtor_identifier"></div><div class="field"><label>Прибыль</label><input name="profit" type="number" step="0.01"></div><div class="field full"><label>Откуда пришёл</label><div id="caseSource" data-value="not_set">${sourceButtons()}</div></div><div class="field full"><label>Заметки</label><textarea name="notes"></textarea></div><div class="field full"><button class="btn primary">Создать дело</button></div></form>`);
+ document.getElementById('caseForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_cases').insert({title:f.get('title'),debtor_name:f.get('debtor_name')||null,debtor_identifier:f.get('debtor_identifier')||null,profit:f.get('profit')?Number(f.get('profit')):null,notes:f.get('notes')||null,source:document.getElementById('caseSource').dataset.value,owner_id:state.user.id,legal_pipeline_id:p.id,legal_stage_id:s?.id||null});if(error)toast(error.message);else{closeModal();await reload();toast('Дело создано')}}
 }
-
-function cardHtml(c){
-  const open=state.tasks
-    .filter(t=>t.client_id===c.id&&t.status==='open')
-    .sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));
-
-  const next=open[0];
-
-  return `
-    <div class="card" data-client="${c.id}">
-      <div class="card-title">${esc(c.company_name)}</div>
-
-      <div class="card-meta">
-        ${esc(c.contact_name||'')}
-        ${c.position?' · '+esc(c.position):''}
-      </div>
-
-      <div class="card-foot">
-        ${
-          c.potential_debtors
-          ?`<span class="tag">${c.potential_debtors} должн.</span>`
-          :''
-        }
-
-        ${
-          next
-          ?`<span class="tag ${new Date(next.due_at)<new Date()?'bad':'warn'}">
-              ${new Date(next.due_at)<new Date()?'Просрочено':'Следующее'}:
-              ${dt(next.due_at)}
-            </span>`
-          :''
-        }
-      </div>
-    </div>
-  `;
+function openOrg(id){
+ const o=state.orgs.find(x=>x.id===id);if(!o)return;
+ const stages=state.stages.filter(s=>s.pipeline_id===o.sales_pipeline_id);
+ modal(`<div class="modal-head"><div><h2>${esc(o.name)}</h2><div class="card-sub">${o.contact_name?esc(o.contact_name):'Контакт не указан'}</div></div><button class="close" onclick="closeModal()">×</button></div>
+ <div class="section"><h3>Откуда пришёл</h3>${sourceButtons(o.source||'not_set')}</div>
+ <div class="section"><h3>Продажный этап</h3><select class="theme-select" onchange="moveOrg('${id}',this.value)">${stages.map(s=>`<option value="${s.id}" ${s.id===o.sales_stage_id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+ ${o.phone||o.email||o.inn?`<div class="section"><h3>Контакты</h3><div class="meta">${o.phone?`<span class="chip">${esc(o.phone)}</span>`:''}${o.email?`<span class="chip">${esc(o.email)}</span>`:''}${o.inn?`<span class="chip">ИНН ${esc(o.inn)}</span>`:''}</div></div>`:''}
+ ${o.notes?`<div class="section"><h3>Заметка</h3><div>${esc(o.notes)}</div></div>`:''}
+ <div class="section"><button class="btn" onclick="editOrg('${id}')">Редактировать</button></div>`);
 }
-
-function renderClients(){
-  const cs=filtered();
-
-  $('#title').textContent='Клиенты';
-  $('#subtitle').textContent=`${cs.length} в текущей воронке`;
-
-  $('#content').innerHTML=`
-    <div class="table-wrap">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Компания</th>
-            <th>Контакт</th>
-            <th>Email</th>
-            <th>Телефон</th>
-            <th>Этап</th>
-            <th>Задачи</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          ${
-            cs.map(c=>{
-              const n=state.tasks.filter(
-                t=>t.client_id===c.id&&t.status==='open'
-              ).length;
-
-              return `
-                <tr data-client="${c.id}">
-                  <td><b>${esc(c.company_name)}</b></td>
-                  <td>${esc(c.contact_name||'')}</td>
-                  <td>${esc(c.email||'')}</td>
-                  <td>${esc(c.phone||'')}</td>
-                  <td>${esc(stageName(c))}</td>
-                  <td>${n}</td>
-                </tr>
-              `;
-            }).join('')||
-            '<tr><td colspan="6"><div class="empty">Нет клиентов</div></td></tr>'
-          }
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  document.querySelectorAll('[data-client]')
-    .forEach(b=>b.onclick=()=>openClient(b.dataset.client));
+async function moveOrg(id,stage){const {error}=await sb.from('crm_organizations').update({sales_stage_id:stage,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{await reload();closeModal()}}
+function editOrg(id){const o=state.orgs.find(x=>x.id===id);if(!o)return;modal(`<div class="modal-head"><h2>Редактировать</h2><button class="close" onclick="closeModal()">×</button></div><form id="editOrg" class="grid" style="margin-top:16px"><div class="field full"><label>Название</label><input name="name" value="${esc(o.name)}" required></div><div class="field"><label>Контакт</label><input name="contact_name" value="${esc(o.contact_name||'')}"></div><div class="field"><label>Телефон</label><input name="phone" value="${esc(o.phone||'')}"></div><div class="field"><label>Email</label><input name="email" value="${esc(o.email||'')}"></div><div class="field"><label>ИНН</label><input name="inn" value="${esc(o.inn||'')}"></div><div class="field full"><label>Откуда пришёл</label><div id="es" data-value="${o.source||'not_set'}">${sourceButtons(o.source||'not_set')}</div></div><div class="field full"><label>Заметка</label><textarea name="notes">${esc(o.notes||'')}</textarea></div><div class="field full"><button class="btn primary">Сохранить</button></div></form>`);
+document.getElementById('editOrg').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_organizations').update({name:f.get('name'),contact_name:f.get('contact_name')||null,phone:f.get('phone')||null,email:f.get('email')||null,inn:f.get('inn')||null,notes:f.get('notes')||null,source:document.getElementById('es').dataset.value,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{closeModal();await reload();toast('Сохранено')}}}
+function openCase(id){
+ const c=state.cases.find(x=>x.id===id);if(!c)return;
+ const stages=state.stages.filter(s=>s.pipeline_id===c.legal_pipeline_id);
+ const group=c.group_id?state.groups.find(g=>g.id===c.group_id):null;
+ modal(`<div class="modal-head"><div><h2>${esc(c.title)}</h2><div class="card-sub">${c.debtor_name?esc(c.debtor_name):'Должник не указан'}</div></div><button class="close" onclick="closeModal()">×</button></div>
+ <div class="section"><h3>Откуда пришёл</h3>${sourceButtons(c.source||'not_set')}</div>
+ <div class="section"><h3>Юридический этап</h3><select class="theme-select" onchange="moveCase('${id}',this.value)">${stages.map(s=>`<option value="${s.id}" ${s.id===c.legal_stage_id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+ ${c.profit!==null&&c.profit!==undefined?`<div class="section"><h3>Итог с прибылью</h3><strong>${fmtMoney(c.profit)}</strong></div>`:''}
+ ${group?`<div class="section"><h3>Группа</h3><button class="btn" onclick="openGroup('${group.id}')">${esc(group.name)} · открыть группу</button></div>`:''}
+ <div class="section"><button class="btn" onclick="toast('Создать шаблон — в разработке')">Создать шаблон</button></div>
+ <div class="section"><button class="btn" onclick="editCase('${id}')">Редактировать</button></div>`);
 }
-
-function renderTasks(){
-  const open=state.tasks
-    .filter(t=>t.status==='open')
-    .sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));
-
-  $('#title').textContent='Задачи';
-  $('#subtitle').textContent=`${open.length} открытых`;
-
-  $('#content').innerHTML=`
-    <div class="task-list">
-      ${
-        open.map(t=>{
-          const c=state.clients.find(x=>x.id===t.client_id);
-          const over=new Date(t.due_at)<new Date();
-
-          return `
-            <div class="task">
-              <div class="task-main">
-                <div class="task-title">${esc(t.title)}</div>
-                <div class="task-sub">
-                  ${esc(c?.company_name||'')} · ${dt(t.due_at)}
-                </div>
-              </div>
-
-              <button data-done="${t.id}">Готово</button>
-
-              <button class="ghost" data-task-client="${t.client_id}">
-                Клиент
-              </button>
-
-              ${over?'<span class="tag bad">Просрочено</span>':''}
-            </div>
-          `;
-        }).join('')||
-        '<div class="empty">Нет открытых задач</div>'
-      }
-    </div>
-  `;
-
-  document.querySelectorAll('[data-done]').forEach(b=>
-    b.onclick=async()=>{
-      const {error}=await sb
-        .from('tasks')
-        .update({status:'done'})
-        .eq('id',b.dataset.done);
-
-      if(error)toast(error.message);
-      else await reloadAll();
-    }
-  );
-
-  document.querySelectorAll('[data-task-client]')
-    .forEach(b=>b.onclick=()=>openClient(b.dataset.taskClient));
+async function moveCase(id,stage){const {error}=await sb.from('crm_cases').update({legal_stage_id:stage,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{await reload();closeModal()}}
+function editCase(id){const c=state.cases.find(x=>x.id===id);modal(`<div class="modal-head"><h2>Редактировать дело</h2><button class="close" onclick="closeModal()">×</button></div><form id="ec" class="grid" style="margin-top:16px"><div class="field full"><label>Название</label><input name="title" value="${esc(c.title)}" required></div><div class="field"><label>Должник</label><input name="debtor_name" value="${esc(c.debtor_name||'')}"></div><div class="field"><label>Идентификатор</label><input name="debtor_identifier" value="${esc(c.debtor_identifier||'')}"></div><div class="field"><label>Прибыль</label><input name="profit" type="number" step="0.01" value="${esc(c.profit??'')}"></div><div class="field full"><label>Заметки</label><textarea name="notes">${esc(c.notes||'')}</textarea></div><div class="field full"><button class="btn primary">Сохранить</button></div></form>`);
+document.getElementById('ec').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_cases').update({title:f.get('title'),debtor_name:f.get('debtor_name')||null,debtor_identifier:f.get('debtor_identifier')||null,profit:f.get('profit')?Number(f.get('profit')):null,notes:f.get('notes')||null,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{closeModal();await reload();toast('Сохранено')}}}
+function openGroup(id){
+ const g=state.groups.find(x=>x.id===id),cs=state.cases.filter(c=>c.group_id===id);
+ modal(`<div class="modal-head"><div><h2>${esc(g?.name||'Группа')}</h2><div class="card-sub">${cs.length} отдельных дел</div></div><button class="close" onclick="closeModal()">×</button></div>
+ <div class="multi" style="margin-top:14px">${cs.map(c=>`<button class="btn" onclick="openCase('${c.id}')">${esc(c.title)}</button>`).join('')}</div>
+ <div class="section"><h3>Групповое действие</h3><button class="btn" onclick="toast('Массовое заполнение полей — подготовлено в архитектуре, UI будет расширен следующим шагом')">Заполнить выбранные дела одновременно</button></div>`);
 }
-
-function renderToday(){
-  const now=new Date();
-
-  const today=state.tasks.filter(
-    t=>t.status==='open'&&
-    new Date(t.due_at).toDateString()===now.toDateString()
-  );
-
-  const overdue=state.tasks.filter(
-    t=>t.status==='open'&&new Date(t.due_at)<now
-  );
-
-  const revenue=state.clients.reduce(
-    (s,c)=>s+Number(c.estimated_revenue||0),0
-  );
-
-  $('#title').textContent='Сегодня';
-  $('#subtitle').textContent=`${today.length} задач сегодня`;
-
-  $('#content').innerHTML=`
-    <div class="stats">
-      <div class="stat">
-        <span>Задач сегодня</span>
-        <b>${today.length}</b>
-      </div>
-
-      <div class="stat">
-        <span>Просрочено</span>
-        <b class="${overdue.length?'overdue':''}">${overdue.length}</b>
-      </div>
-
-      <div class="stat">
-        <span>Клиентов</span>
-        <b>${state.clients.filter(c=>c.pipeline==='active').length}</b>
-      </div>
-
-      <div class="stat">
-        <span>Потенциальная выручка</span>
-        <b>${money(revenue)||'0 ₽'}</b>
-      </div>
-    </div>
-
-    <div class="task-list">
-      ${
-        today
-          .sort((a,b)=>new Date(a.due_at)-new Date(b.due_at))
-          .map(t=>{
-            const c=state.clients.find(x=>x.id===t.client_id);
-
-            return `
-              <div class="task">
-                <div class="task-main">
-                  <div class="task-title">${esc(t.title)}</div>
-                  <div class="task-sub">
-                    ${esc(c?.company_name||'')} · ${dt(t.due_at)}
-                  </div>
-                </div>
-
-                <button data-task-client="${t.client_id}">
-                  Клиент
-                </button>
-              </div>
-            `;
-          }).join('')||
-        '<div class="empty">Сегодня всё спокойно</div>'
-      }
-    </div>
-  `;
-
-  document.querySelectorAll('[data-task-client]')
-    .forEach(b=>b.onclick=()=>openClient(b.dataset.taskClient));
+async function newLegalPipeline(){
+ const name=prompt('Название юридической воронки');if(!name?.trim())return;
+ const {data,error}=await sb.from('crm_pipelines').insert({name:name.trim(),entity_type:'case',is_system:false,sort_order:state.pipelines.length,created_by:state.user.id}).select().single();
+ if(error)toast(error.message);else{await reload();toast('Воронка создана')}
 }
-
-async function reloadAll(){
-  state.loading=true;
-
-  try{
-    const [c,t,a]=await Promise.all([
-      sb.from('clients')
-        .select('*')
-        .is('deleted_at',null)
-        .order('created_at',{ascending:false}),
-
-      sb.from('tasks')
-        .select('*')
-        .order('due_at',{ascending:true}),
-
-      sb.from('activities')
-        .select('*')
-        .order('created_at',{ascending:false})
-        .limit(1000)
-    ]);
-
-    for(const r of [c,t,a]){
-      if(r.error)throw r.error;
-    }
-
-    state.clients=c.data||[];
-    state.tasks=t.data||[];
-    state.activities=a.data||[];
-
-    renderCurrent();
-
-  }catch(e){
-    toast('Ошибка загрузки: '+e.message);
-    status('Ошибка соединения','bad');
-  }finally{
-    state.loading=false;
-  }
-}
-
-function subscribeRealtime(){
-  if(state.subscription){
-    sb.removeChannel(state.subscription);
-  }
-
-  state.subscription=sb
-    .channel('crm-live')
-    .on(
-      'postgres_changes',
-      {event:'*',schema:'public',table:'clients'},
-      ()=>reloadAll()
-    )
-    .on(
-      'postgres_changes',
-      {event:'*',schema:'public',table:'tasks'},
-      ()=>reloadAll()
-    )
-    .on(
-      'postgres_changes',
-      {event:'*',schema:'public',table:'activities'},
-      ()=>reloadAll()
-    )
-    .subscribe(s=>{
-      if(s==='SUBSCRIBED'){
-        status(`Realtime · ${state.user.email}`,'ok');
-      }
-    });
-}
-
-function openClient(id){
-  const c=state.clients.find(x=>x.id===id);
-
-  if(!c)return;
-
-  const acts=state.activities
-    .filter(a=>a.client_id===id)
-    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
-
-  const tasks=state.tasks
-    .filter(t=>t.client_id===id&&t.status==='open')
-    .sort((a,b)=>new Date(a.due_at)-new Date(b.due_at));
-
-  const ov=document.createElement('div');
-  ov.className='overlay';
-
-  ov.innerHTML=`
-    <div class="modal">
-
-      <div class="modal-head">
-        <div>
-          <h2>${esc(c.company_name)}</h2>
-          <div class="muted">
-            ${esc(c.contact_name||'')}
-            ${c.position?' · '+esc(c.position):''}
-          </div>
-        </div>
-
-        <button id="close">×</button>
-      </div>
-
-      <div class="detail-grid">
-
-        <div class="stack">
-
-          <div class="field">
-            <label>Контакт</label>
-            <input id="contact" value="${esc(c.contact_name||'')}">
-          </div>
-
-          <div class="field">
-            <label>Должность</label>
-            <input id="position" value="${esc(c.position||'')}">
-          </div>
-
-          <div class="field">
-            <label>Email</label>
-            <input id="email" value="${esc(c.email||'')}">
-          </div>
-
-          <div class="field">
-            <label>Телефон</label>
-            <input id="phone" value="${esc(c.phone||'')}">
-          </div>
-
-          <div class="field">
-            <label>Telegram</label>
-            <input id="telegram" value="${esc(c.telegram||'')}">
-          </div>
-
-          <div class="field">
-            <label>MAX</label>
-            <input id="max_contact" value="${esc(c.max_contact||'')}">
-          </div>
-
-          <div class="field">
-            <label>Сайт</label>
-            <input id="website" value="${esc(c.website||'')}">
-          </div>
-
-          <div class="field">
-            <label>ИНН</label>
-            <input id="inn" value="${esc(c.inn||'')}">
-          </div>
-
-        </div>
-
-        <div class="stack">
-
-          <div class="field">
-            <label>Воронка</label>
-            <select id="pipe">
-              ${Object.entries(PIPE).map(
-                ([k,v])=>`<option value="${k}">${v}</option>`
-              ).join('')}
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Этап</label>
-            <select id="stage"></select>
-          </div>
-
-          <div class="field">
-            <label>Потенциал, должников</label>
-            <input id="pot" type="number" value="${c.potential_debtors??''}">
-          </div>
-
-          <div class="field">
-            <label>Потенциальная выручка</label>
-            <input id="rev" type="number" value="${c.estimated_revenue??''}">
-          </div>
-
-          <div class="field">
-            <label>Согласованный срок</label>
-            <input id="agreed" type="date" value="${c.agreed_date||''}">
-          </div>
-
-          <div class="field">
-            <label>Заметки</label>
-            <textarea id="notes">${esc(c.notes||'')}</textarea>
-          </div>
-
-          <button class="primary" id="save">Сохранить</button>
-
-        </div>
-
-      </div>
-
-      <div class="section">
-
-        <div class="toolbar">
-          <b>Открытые задачи</b>
-          <span class="grow"></span>
-        </div>
-
-        ${
-          tasks.length
-          ?`
-            <div class="task-list">
-              ${tasks.map(t=>`
-                <div class="task">
-                  <div class="task-main">
-                    <div class="task-title">${esc(t.title)}</div>
-                    <div class="task-sub">
-                      ${esc(t.kind)} · ${dt(t.due_at)}
-                    </div>
-                  </div>
-                  <button data-done="${t.id}">Готово</button>
-                </div>
-              `).join('')}
-            </div>
-          `
-          :'<div class="empty">Нет открытых задач</div>'
-        }
-
-      </div>
-
-      <div class="section">
-
-        <div class="toolbar">
-          <b>Новая задача</b>
-          <span class="grow"></span>
-        </div>
-
-        <div class="detail-grid">
-
-          <div class="field">
-            <label>Название</label>
-            <input id="taskTitle" placeholder="Получить документы">
-          </div>
-
-          <div class="field">
-            <label>Срок</label>
-            <input id="taskDue" type="datetime-local">
-          </div>
-
-        </div>
-
-        <div class="field">
-          <label>Тип</label>
-
-          <select id="taskKind">
-            <option value="documents">Документы</option>
-            <option value="follow_up">Напоминание</option>
-            <option value="call">Звонок</option>
-            <option value="other">Другое</option>
-          </select>
-        </div>
-
-        <button id="addTask">Добавить задачу</button>
-
-      </div>
-
-      <div class="section">
-
-        <div class="toolbar">
-          <b>История</b>
-          <span class="grow"></span>
-        </div>
-
-        ${
-          acts.map(a=>`
-            <div class="activity">
-              <div class="activity-head">
-                <span>${esc(a.kind)}</span>
-                <span>${dt(a.created_at)}</span>
-              </div>
-              <div>${esc(a.text)}</div>
-            </div>
-          `).join('')||
-          '<div class="empty">История пуста</div>'
-        }
-
-        <div class="field" style="margin-top:10px">
-          <label>Добавить запись</label>
-          <textarea id="actText" placeholder="Созвонились, документы обещаны до пятницы"></textarea>
-        </div>
-
-        <button id="addAct">Добавить запись</button>
-
-      </div>
-
-    </div>
-  `;
-
-  document.body.append(ov);
-
-  const pipe=ov.querySelector('#pipe');
-  const stage=ov.querySelector('#stage');
-
-  pipe.value=c.pipeline;
-
-  const refreshStages=()=>{
-    stage.innerHTML=STAGES[pipe.value]
-      .map(([k,l])=>`<option value="${k}">${l}</option>`)
-      .join('');
-
-    stage.value=
-      pipe.value===c.pipeline
-      ?c.stage
-      :STAGES[pipe.value][0][0];
-  };
-
-  refreshStages();
-
-  pipe.onchange=refreshStages;
-
-  ov.querySelector('#close').onclick=()=>ov.remove();
-
-  ov.onclick=e=>{
-    if(e.target===ov)ov.remove();
-  };
-
-  ov.querySelector('#save').onclick=async()=>{
-    const patch={
-      contact_name:ov.querySelector('#contact').value.trim(),
-      position:ov.querySelector('#position').value.trim(),
-      email:ov.querySelector('#email').value.trim(),
-      phone:ov.querySelector('#phone').value.trim(),
-      telegram:ov.querySelector('#telegram').value.trim(),
-      max_contact:ov.querySelector('#max_contact').value.trim(),
-      website:ov.querySelector('#website').value.trim(),
-      inn:ov.querySelector('#inn').value.trim(),
-      pipeline:pipe.value,
-      stage:stage.value,
-      potential_debtors:Number(ov.querySelector('#pot').value)||null,
-      estimated_revenue:Number(ov.querySelector('#rev').value)||null,
-      agreed_date:ov.querySelector('#agreed').value||null,
-      notes:ov.querySelector('#notes').value
-    };
-
-    const {data:{user}}=await sb.auth.getUser();
-
-    const {error}=await sb
-      .from('clients')
-      .update(patch)
-      .eq('id',id);
-
-    if(error){
-      toast(error.message);
-    }else{
-      await sb.from('activities').insert({
-        client_id:id,
-        kind:'stage_change',
-        text:`Карточка клиента обновлена пользователем ${user.email}`,
-        created_by:user.id
-      });
-
-      ov.remove();
-      await reloadAll();
-    }
-  };
-
-  ov.querySelector('#addTask').onclick=async()=>{
-    const title=ov.querySelector('#taskTitle').value.trim();
-    const due=ov.querySelector('#taskDue').value;
-
-    if(!title||!due){
-      toast('Заполни название и срок');
-      return;
-    }
-
-    const {data:{user}}=await sb.auth.getUser();
-
-    const {error}=await sb.from('tasks').insert({
-      client_id:id,
-      title,
-      due_at:new Date(due).toISOString(),
-      kind:ov.querySelector('#taskKind').value,
-      status:'open',
-      owner_id:user.id,
-      created_by:user.id
-    });
-
-    if(error){
-      toast(error.message);
-    }else{
-      ov.remove();
-      await reloadAll();
-      openClient(id);
-    }
-  };
-
-  ov.querySelector('#addAct').onclick=async()=>{
-    const text=ov.querySelector('#actText').value.trim();
-
-    if(!text)return;
-
-    const {data:{user}}=await sb.auth.getUser();
-
-    const {error}=await sb.from('activities').insert({
-      client_id:id,
-      text,
-      created_by:user.id,
-      kind:'note'
-    });
-
-    if(error){
-      toast(error.message);
-    }else{
-      ov.remove();
-      await reloadAll();
-      openClient(id);
-    }
-  };
-
-  ov.querySelectorAll('[data-done]').forEach(b=>
-    b.onclick=async()=>{
-      const {error}=await sb
-        .from('tasks')
-        .update({status:'done'})
-        .eq('id',b.dataset.done);
-
-      if(error){
-        toast(error.message);
-      }else{
-        ov.remove();
-        await reloadAll();
-        openClient(id);
-      }
-    }
-  );
-}
-
-async function newClient(){
-  const ov=document.createElement('div');
-
-  ov.className='overlay';
-
-  ov.innerHTML=`
-    <div class="modal small">
-
-      <div class="modal-head">
-        <h3>Новый клиент</h3>
-        <button id="x">×</button>
-      </div>
-
-      <div class="stack">
-
-        <div class="field">
-          <label>Компания</label>
-          <input id="company">
-        </div>
-
-        <div class="field">
-          <label>Контакт</label>
-          <input id="contact">
-        </div>
-
-        <div class="field">
-          <label>Email</label>
-          <input id="email">
-        </div>
-
-        <div class="field">
-          <label>Телефон</label>
-          <input id="phone">
-        </div>
-
-        <div class="field">
-          <label>Сайт</label>
-          <input id="website">
-        </div>
-
-        <div class="field">
-          <label>Воронка</label>
-
-          <select id="pipe">
-            ${Object.entries(PIPE).map(
-              ([k,v])=>`<option value="${k}">${v}</option>`
-            ).join('')}
-          </select>
-        </div>
-
-        <button class="primary" id="create">Создать</button>
-
-      </div>
-
-    </div>
-  `;
-
-  document.body.append(ov);
-
-  ov.querySelector('#x').onclick=()=>ov.remove();
-
-  ov.querySelector('#create').onclick=async()=>{
-    const company=ov.querySelector('#company').value.trim();
-
-    if(!company){
-      toast('Укажи компанию');
-      return;
-    }
-
-    const {data:{user}}=await sb.auth.getUser();
-    const pipe=ov.querySelector('#pipe').value;
-
-    const {error}=await sb.from('clients').insert({
-      company_name:company,
-      contact_name:ov.querySelector('#contact').value.trim(),
-      email:ov.querySelector('#email').value.trim(),
-      phone:ov.querySelector('#phone').value.trim(),
-      website:ov.querySelector('#website').value.trim(),
-      pipeline:pipe,
-      stage:STAGES[pipe][0][0],
-      owner_id:user.id
-    });
-
-    if(error){
-      toast(error.message);
-    }else{
-      ov.remove();
-      await reloadAll();
-
-      openClient(
-        state.clients.find(c=>c.company_name===company)?.id
-      );
-    }
-  };
-}
+async function renamePipeline(id){const p=state.pipelines.find(x=>x.id===id);const name=prompt('Новое название',p?.name);if(!name?.trim())return;const {error}=await sb.from('crm_pipelines').update({name:name.trim()}).eq('id',id);if(error)toast(error.message);else await reload()}
+async function deletePipeline(id){const p=state.pipelines.find(x=>x.id===id);if(!p)return;if(!confirm(`Удалить воронку «${p.name}»? Карточки не удаляются. Сначала перенесите их в другую воронку.`))return;const used=state.cases.some(c=>c.legal_pipeline_id===id);if(used){toast('В воронке есть дела. Сначала перенесите их в другую воронку.');return}const {error}=await sb.from('crm_pipelines').update({active:false}).eq('id',id);if(error)toast(error.message);else await reload()}
+async function newStage(pid){const name=prompt('Название новой колонки');if(!name?.trim())return;const max=Math.max(-1,...stagesFor(pid).map(s=>s.sort_order));const {error}=await sb.from('crm_pipeline_stages').insert({pipeline_id:pid,name:name.trim(),sort_order:max+1});if(error)toast(error.message);else await reload()}
+function newStageUnused(){toast('')}
+async function quickOrg(id){openOrg(id)}
 
 async function boot(){
-  sb=window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-  const {
-    data:{session}
-  }=await sb.auth.getSession();
-
-  if(session){
-    await startApp();
-  }else{
-    showLogin();
-  }
-
-  sb.auth.onAuthStateChange((_e,s)=>{
-    if(s?.user&&!state.user){
-      startApp();
-    }
-  });
+ state.theme=localStorage.getItem('pd24_theme')||'system';applyTheme();
+ sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+ const {data:{session}}=await sb.auth.getSession();
+ if(session){try{const ok=await ensureMember();if(!ok){toast('Нет доступа к CRM');await sb.auth.signOut();showLogin();return}state.user=session.user;await reload();shell()}catch(e){console.error(e);toast(e.message||'Ошибка загрузки')}}else showLogin();
+ sb.auth.onAuthStateChange(async(_e,s)=>{if(s?.user&&!state.user){state.user=s.user;try{if(await ensureMember())await reload()}catch(e){console.error(e)}}});
 }
-
 boot();
 </script>
 </body>
 </html>
+
