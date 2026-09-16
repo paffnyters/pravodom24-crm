@@ -3,53 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>PravoDom24 CRM v2</title>
+<title>PravoDom24</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
-<style>
-:root{
+<style>:root{
   color-scheme:light;
   --bg:#f5f6f8;--panel:#fff;--panel2:#f0f2f5;--text:#15171a;--muted:#747a83;
   --line:#e2e5e9;--accent:#111827;--accentText:#fff;--danger:#b42318;--shadow:0 8px 30px rgba(16,24,40,.07);
 }
-@media(prefers-color-scheme:dark){
-  body.system{color-scheme:dark}
-}
-body.dark{
-  --bg:#111315;--panel:#191c20;--panel2:#22262b;--text:#f4f5f7;--muted:#9ba2ac;
-  --line:#30353c;--accent:#f4f5f7;--accentText:#111315;--danger:#ff8a80;--shadow:0 12px 40px rgba(0,0,0,.25);
-}
+@media(prefers-color-scheme:dark){body.system{color-scheme:dark;--bg:#111315;--panel:#191c20;--panel2:#22262b;--text:#f4f5f7;--muted:#9ba2ac;--line:#30353c;--accent:#f4f5f7;--accentText:#111315;--danger:#ff8a80;--shadow:0 12px 40px rgba(0,0,0,.25)}}
+body.dark{color-scheme:dark;--bg:#111315;--panel:#191c20;--panel2:#22262b;--text:#f4f5f7;--muted:#9ba2ac;--line:#30353c;--accent:#f4f5f7;--accentText:#111315;--danger:#ff8a80;--shadow:0 12px 40px rgba(0,0,0,.25)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
 button,input,textarea,select{font:inherit}button{cursor:pointer}
-.app{min-height:100vh;display:grid;grid-template-columns:220px 1fr}
-.sidebar{border-right:1px solid var(--line);background:var(--panel);padding:18px 12px;display:flex;flex-direction:column;gap:18px}
-.logo{font-weight:800;font-size:18px;padding:4px 10px}.logo small{display:block;color:var(--muted);font-weight:500;font-size:11px;margin-top:2px}
-.nav{display:grid;gap:5px}.nav button,.bottomnav button{border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:11px;text-align:left}.nav button.active,.nav button:hover,.bottomnav button.active{background:var(--panel2);color:var(--text)}
-.sidebar-bottom{margin-top:auto}.theme-select{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:9px;border-radius:10px}
-.user{font-size:12px;color:var(--muted);padding:0 10px;word-break:break-word}
-main{min-width:0;padding:24px 28px 90px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}.top h1{margin:0;font-size:25px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:220px;border-right:1px solid var(--line);background:var(--panel);padding:18px 12px;display:flex;flex-direction:column;gap:18px;z-index:9;overflow-y:auto}
+.logo{font-weight:800;font-size:18px;padding:4px 10px}.nav{display:grid;gap:5px}.nav button,.bottomnav button{border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:11px;text-align:left}.nav button.active,.nav button:hover,.bottomnav button.active{background:var(--panel2);color:var(--text)}
+.sidebar-bottom{margin-top:auto;padding-top:18px}.settings-btn{width:100%;text-align:left}.user{font-size:12px;color:var(--muted);padding:0 10px;word-break:break-word;margin-top:10px}
+main{min-width:0;margin-left:220px;padding:24px 28px 90px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}.top h1{margin:0;font-size:25px}.actions{display:flex;gap:8px;flex-wrap:wrap}
 .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 13px;border-radius:10px}.btn.primary{background:var(--accent);color:var(--accentText);border-color:var(--accent)}.btn.danger{color:var(--danger)}
-.search{width:min(360px,100%);border:1px solid var(--line);background:var(--panel);color:var(--text);padding:11px 13px;border-radius:11px}
-.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap}
-.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(270px,300px);gap:12px;overflow-x:auto;padding-bottom:8px}
-.column{background:var(--panel2);border:1px solid var(--line);border-radius:15px;min-height:420px;padding:10px}
-.column-head{display:flex;align-items:center;justify-content:space-between;padding:5px 4px 10px}.column-title{font-weight:700}.count{color:var(--muted);font-size:12px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:9px;box-shadow:0 2px 10px rgba(0,0,0,.025)}
-.card:hover{border-color:#aeb4bc}.card-title{font-weight:750;line-height:1.25}.card-sub{color:var(--muted);font-size:12px;margin-top:4px}
-.card-action{width:100%;margin-top:11px}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chip{font-size:11px;color:var(--muted);background:var(--panel2);border-radius:999px;padding:4px 7px}
-.empty{color:var(--muted);font-size:13px;padding:18px 5px;text-align:center}.hidden{display:none!important}
+.search{width:min(360px,100%);border:1px solid var(--line);background:var(--panel);color:var(--text);padding:11px 13px;border-radius:11px}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(270px,300px);gap:12px;overflow-x:auto;padding-bottom:7px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.board::-webkit-scrollbar{height:7px}.board::-webkit-scrollbar-track{background:transparent}.board::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}.board::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+.column{background:var(--panel2);border:1px solid var(--line);border-radius:15px;min-height:420px;padding:10px}.column-head{display:flex;align-items:center;justify-content:space-between;padding:5px 4px 10px}.column-title{font-weight:700}.count{color:var(--muted);font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:9px;box-shadow:0 2px 10px rgba(0,0,0,.025)}.card:hover{border-color:#aeb4bc}.card-title{font-weight:750;line-height:1.25}.card-sub{color:var(--muted);font-size:12px;margin-top:4px}.card-action{width:100%;margin-top:11px}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chip{font-size:11px;color:var(--muted);background:var(--panel2);border-radius:999px;padding:4px 7px}.empty{color:var(--muted);font-size:13px;padding:18px 5px;text-align:center}.hidden{display:none!important}
 .list{display:grid;gap:9px}.row{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;justify-content:center;z-index:10}.overlay.show{display:flex}
-.modal{width:min(760px,100%);max-height:92vh;overflow:auto;background:var(--panel);border-radius:20px 20px 0 0;padding:20px;box-shadow:var(--shadow)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:center;justify-content:center;z-index:20;padding:20px}.overlay.show{display:flex}.modal{width:min(760px,100%);max-height:min(88vh,900px);overflow:auto;background:var(--panel);border-radius:20px;padding:20px;box-shadow:var(--shadow);scrollbar-width:thin;scrollbar-color:var(--line) transparent}.modal::-webkit-scrollbar{width:7px}.modal::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}.modal::-webkit-scrollbar-track{background:transparent}
 .modal-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.modal h2{margin:0 0 5px}.close{border:0;background:var(--panel2);color:var(--text);border-radius:9px;padding:8px 11px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:11px;color:var(--muted)}.field input,.field textarea,.field select{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px;border-radius:9px}.field textarea{min-height:90px;resize:vertical}
-.section{margin-top:18px;padding-top:15px;border-top:1px solid var(--line)}.section h3{margin:0 0 10px;font-size:14px}
-.source-box{display:flex;gap:7px;flex-wrap:wrap}.source{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;padding:8px 10px}.source.active{background:var(--accent);color:var(--accentText)}
+.section{margin-top:18px;padding-top:15px;border-top:1px solid var(--line)}.section h3{margin:0 0 10px;font-size:14px}.source-box{display:flex;gap:7px;flex-wrap:wrap}.source{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;padding:8px 10px}.source.active{background:var(--accent);color:var(--accentText)}
 .group{border:2px solid var(--line);border-radius:17px;padding:9px;margin-bottom:12px}.group-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:3px}.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}.group .card{margin:0}.multi{display:flex;gap:8px;flex-wrap:wrap}
+.pipeline-switch{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 8px;scrollbar-width:none}.pipeline-switch::-webkit-scrollbar{display:none}.pipeline-tab{white-space:nowrap}.pipeline-tab.active{background:var(--accent);color:var(--accentText);border-color:var(--accent)}
+.settings-grid{display:grid;gap:12px}.settings-card{max-width:760px}.profit-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.profit-item{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:11px}.profit-item strong{display:block;margin-top:5px;font-size:16px}.selection-bar{position:sticky;bottom:10px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);padding:10px;border-radius:13px;display:flex;gap:8px;align-items:center;justify-content:space-between;z-index:5}
 .bottomnav{display:none}.login{min-height:100vh;display:grid;place-items:center;padding:20px}.loginbox{width:min(400px,100%);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}.loginbox h1{margin-top:0}.loginbox form{display:grid;gap:10px}.loginbox input{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:12px;border-radius:10px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--accent);color:var(--accentText);padding:10px 14px;border-radius:10px;display:none;z-index:30;font-size:13px}.toast.show{display:block}
-@media(max-width:760px){
-  .app{display:block}.sidebar{display:none}main{padding:16px 13px 86px}.top h1{font-size:21px}.top{align-items:flex-start}.board{grid-auto-columns:calc(100vw - 26px)}.bottomnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);z-index:8;padding:6px 5px env(safe-area-inset-bottom)}.bottomnav button{text-align:center;font-size:11px;padding:8px 4px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal{max-height:95vh}.row{align-items:flex-start;flex-direction:column}
-}
+@media(max-width:760px){.app{display:block}.sidebar{display:none}main{margin-left:0;padding:16px 13px 86px}.top h1{font-size:21px}.top{align-items:flex-start}.board{grid-auto-columns:calc(100vw - 26px)}.bottomnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);z-index:8;padding:6px 5px env(safe-area-inset-bottom)}.bottomnav button{text-align:center;font-size:11px;padding:8px 4px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal{max-height:92vh;padding:17px}.overlay{padding:12px}.row{align-items:flex-start;flex-direction:column}.profit-summary{grid-template-columns:1fr}.pipeline-switch{margin-right:-13px;padding-right:13px}}
 </style>
 </head>
 <body class="system">
@@ -79,27 +63,26 @@ function applyTheme(){
 }
 function showLogin(){
   document.getElementById('root').innerHTML=`<div class="login"><div class="loginbox">
-  <h1>PravoDom24</h1><p style="color:var(--muted)">CRM v2</p>
+  <h1>PravoDom24</h1>
   <form id="loginForm"><input id="email" type="email" placeholder="Email" required><input id="password" type="password" placeholder="Пароль" required><button class="btn primary">Войти</button></form>
   </div></div>`;
   document.getElementById('loginForm').onsubmit=async e=>{e.preventDefault();try{const {error}=await sb.auth.signInWithPassword({email:email.value,password:password.value});if(error)throw error;await startApp()}catch(x){toast(x.message||'Ошибка входа')}};
 }
 function nav(){
- return `<aside class="sidebar"><div class="logo">PravoDom24<small>CRM v2</small></div>
+ return `<aside class="sidebar"><div class="logo">PravoDom24</div>
  <div class="nav">
   <button class="${state.view==='sales'?'active':''}" onclick="setView('sales')">Продажи</button>
   <button class="${state.view==='legal'?'active':''}" onclick="setView('legal')">Юридическая работа</button>
   <button class="${state.view==='clients'?'active':''}" onclick="setView('clients')">Клиенты</button>
   <button class="${state.view==='tasks'?'active':''}" onclick="setView('tasks')">Задачи</button>
-  <button class="${state.view==='settings'?'active':''}" onclick="setView('settings')">Настройки</button>
  </div>
- <div class="sidebar-bottom"><select class="theme-select" onchange="state.theme=this.value;applyTheme()"><option value="system" ${state.theme==='system'?'selected':''}>⚙️ Тема системы</option><option value="light" ${state.theme==='light'?'selected':''}>☀️ Дневная</option><option value="dark" ${state.theme==='dark'?'selected':''}>🌙 Ночная</option></select><div class="user" style="margin-top:10px">${esc(state.user?.email||'')}</div></div></aside>`
+ <div class="sidebar-bottom"><button class="btn settings-btn ${state.view==='settings'?'primary':''}" onclick="setView('settings')">Настройки</button><div class="user">${esc(state.user?.email||'')}</div></div></aside>`
 }
 function bottomNav(){return `<nav class="bottomnav">
 <button class="${state.view==='sales'?'active':''}" onclick="setView('sales')">Продажи</button>
 <button class="${state.view==='legal'?'active':''}" onclick="setView('legal')">Юр. работа</button>
 <button class="${state.view==='tasks'?'active':''}" onclick="setView('tasks')">Задачи</button>
-<button class="${state.view==='settings'?'active':''}" onclick="setView('settings')">Ещё</button></nav>`}
+<button class="${state.view==='settings'?'active':''}" onclick="setView('settings')">Настройки</button></nav>`}
 
 function shell(){
  document.getElementById('root').innerHTML=`<div class="app">${nav()}<main id="main"></main></div>${bottomNav()}`;
@@ -122,48 +105,50 @@ function render(){
 function renderSales(main){
  const p=pipelineFor('organization')[0];
  const stages=stagesFor(p?.id);
- main.innerHTML=header('Продажи',`<button class="btn primary" onclick="newOrg()">+ Организация</button>`)+
- `<div class="toolbar">${searchBar()}<div class="muted">Организации</div></div><div class="board">${stages.map(s=>`
+ main.innerHTML=header('Продажи',`<button class="btn primary" onclick="newOrg()">Добавить</button>`)+
+ `<div class="toolbar">${searchBar()}</div><div class="board">${stages.map(s=>`
  <section class="column"><div class="column-head"><span class="column-title">${esc(s.name)}</span><span class="count">${state.orgs.filter(o=>o.sales_stage_id===s.id).length}</span></div>
- ${state.orgs.filter(o=>o.sales_stage_id===s.id&&matchOrg(o)).map(orgCard).join('')||'<div class="empty">Пусто</div>'}</section>`).join('')||'<div class="empty">Создайте воронку «Продажи» в настройках.</div>'}</div>`;
+ ${state.orgs.filter(o=>o.sales_stage_id===s.id&&matchOrg(o)).map(orgCard).join('')||'<div class="empty">Пусто</div>'}</section>`).join('')||'<div class="empty">Воронка «Продажи» не настроена.</div>'}</div>`;
 }
 function matchOrg(o){const q=state.search.toLowerCase();return !q||[o.name,o.contact_name,o.phone,o.email,o.inn].filter(Boolean).some(x=>String(x).toLowerCase().includes(q))}
 function orgCard(o){
  return `<article class="card" onclick="openOrg('${o.id}')"><div class="card-title">${esc(o.name)}</div>${o.contact_name?`<div class="card-sub">${esc(o.contact_name)}</div>`:''}
- ${o.source?`<div class="meta"><span class="chip">${esc(SOURCE_LABEL[o.source])}</span></div>`:''}
+ ${o.source?`<div class="meta"><span class="chip">${esc(SOURCE_LABEL[o.source])}</span></div>`:'<div class="meta"><span class="chip">не установлено</span></div>'}
  ${o.phone?`<div class="card-sub" style="margin-top:9px">${esc(o.phone)}</div>`:''}
  <button class="btn card-action" onclick="event.stopPropagation();quickOrg('${o.id}')">Открыть</button></article>`
 }
 
 function renderLegal(main){
  const ps=pipelineFor('case');
- main.innerHTML=header('Юридическая работа',`<button class="btn" onclick="newLegalPipeline()">+ Воронка</button><button class="btn primary" onclick="newCase()">+ Дело</button>`);
- if(!ps.length){main.innerHTML+=`<div class="card"><div class="card-title">Здесь будут юридические воронки Дмитрия</div><div class="card-sub">Можно создать несколько — под разные процессы.</div><button class="btn primary" style="margin-top:12px" onclick="newLegalPipeline()">Создать первую воронку</button></div>`;return}
- main.innerHTML+=ps.map(p=>legalPipelineHtml(p)).join('');
+ if(!state.legalPipelineView && ps[0])state.legalPipelineView=ps[0].id;
+ const selected=state.legalPipelineView==='all'?null:ps.find(p=>p.id===state.legalPipelineView)||ps[0];
+ const tabs=ps.map(p=>`<button class="btn pipeline-tab ${selected?.id===p.id?'active':''}" onclick="selectLegalPipeline('${p.id}')">${esc(p.name)}</button>`).join('');
+ const allTab=`<button class="btn pipeline-tab ${state.legalPipelineView==='all'?'active':''}" onclick="selectLegalPipeline('all')">Все воронки</button>`;
+ main.innerHTML=header('Юридическая работа',`<button class="btn" onclick="newLegalPipeline()">+ Воронка</button><button class="btn" onclick="newGroup()">+ Группа</button><button class="btn primary" onclick="newCase()">+ Дело</button>`)+
+ `<div class="pipeline-switch">${tabs}${allTab}</div>${selected?legalPipelineHtml(selected):ps.map(legalPipelineHtml).join('')}`;
+ if(!ps.length)main.innerHTML+=`<div class="card"><div class="card-title">Юридических воронок пока нет</div><div class="card-sub">Создайте первую воронку под свой процесс.</div><button class="btn primary" style="margin-top:12px" onclick="newLegalPipeline()">Создать первую воронку</button></div>`;
 }
+function selectLegalPipeline(id){state.legalPipelineView=id;state.search='';render()}
 function legalPipelineHtml(p){
- const stages=stagesFor(p.id);
- return `<section style="margin-bottom:26px"><div class="toolbar"><div><h2 style="margin:0;font-size:18px">${esc(p.name)}</h2><div class="card-sub">${state.cases.filter(c=>c.legal_pipeline_id===p.id).length} дел</div></div><div class="actions"><button class="btn" onclick="renamePipeline('${p.id}')">Переименовать</button><button class="btn danger" onclick="deletePipeline('${p.id}')">Удалить</button></div></div>
- <div class="board">${stages.map(s=>{
- const cs=state.cases.filter(c=>c.legal_stage_id===s.id&&matchCase(c));
- return `<section class="column"><div class="column-head"><span class="column-title">${esc(s.name)}</span><span class="count">${cs.length}</span></div>${groupedCards(cs)}</section>`}).join('')}</div>
+ const stages=stagesFor(p.id); const total=state.cases.filter(c=>c.legal_pipeline_id===p.id).length;
+ return `<section style="margin-bottom:26px"><div class="toolbar"><div><h2 style="margin:0;font-size:18px">${esc(p.name)}</h2><div class="card-sub">${total} дел</div></div><div class="actions"><button class="btn" onclick="renamePipeline('${p.id}')">Переименовать</button><button class="btn danger" onclick="deletePipeline('${p.id}')">Удалить</button></div></div>
+ ${profitSummary(p.id)}
+ <div class="board">${stages.map(s=>{const cs=state.cases.filter(c=>c.legal_stage_id===s.id&&matchCase(c));return `<section class="column"><div class="column-head"><div><div class="column-title">${esc(s.name)}</div><div class="actions" style="margin-top:6px"><button class="btn" style="padding:5px 7px;font-size:11px" onclick="renameStage('${s.id}')">Изменить</button><button class="btn danger" style="padding:5px 7px;font-size:11px" onclick="deleteStage('${s.id}')">Удалить</button></div></div><span class="count">${cs.length}</span></div>${groupedCards(cs,p.id)}</section>`}).join('')}</div>
  <div class="actions" style="margin-top:8px"><button class="btn" onclick="newStage('${p.id}')">+ Колонка</button></div></section>`
 }
-function groupedCards(cs){
- const groups={ungrouped:[]};
- cs.forEach(c=>{if(c.group_id){(groups[c.group_id]??=[]).push(c)}else groups.ungrouped.push(c)});
- let html='';
- Object.entries(groups).forEach(([gid,items])=>{
-   if(gid==='ungrouped'){html+=items.map(caseCard).join('')||'';return}
-   const g=state.groups.find(x=>x.id===gid);
-   html+=`<div class="group"><div class="group-head"><strong>${esc(g?.name||'Группа')}</strong><button class="btn" onclick="event.stopPropagation();openGroup('${gid}')">Открыть группу</button></div><div class="group-grid">${items.map(caseCard).join('')}</div></div>`
- });
- return html||'<div class="empty">Пусто</div>'
+function profitSummary(pid){
+ const sums={mailing:0,dmitry_base:0,not_set:0};state.cases.filter(c=>c.legal_pipeline_id===pid&&c.profit!==null&&c.profit!==undefined).forEach(c=>sums[c.source||'not_set']+=Number(c.profit)||0);
+ return `<div class="profit-summary" style="margin:0 0 12px"><div class="profit-item"><span class="card-sub">с рассылок</span><strong>${fmtMoney(sums.mailing)||'0 ₽'}</strong></div><div class="profit-item"><span class="card-sub">база клиентов Дмитрия</span><strong>${fmtMoney(sums.dmitry_base)||'0 ₽'}</strong></div><div class="profit-item"><span class="card-sub">не установлено</span><strong>${fmtMoney(sums.not_set)||'0 ₽'}</strong></div></div>`;
+}
+function groupedCards(cs,pid){
+ const groups={ungrouped:[]};cs.forEach(c=>{if(c.group_id){(groups[c.group_id]??=[]).push(c)}else groups.ungrouped.push(c)});let html='';
+ Object.entries(groups).forEach(([gid,items])=>{if(gid==='ungrouped'){html+=items.map(caseCard).join('');return}const g=state.groups.find(x=>x.id===gid);html+=`<div class="group"><div class="group-head"><strong>${esc(g?.name||'Группа')}</strong><button class="btn" onclick="event.stopPropagation();openGroup('${gid}')">Открыть группу</button></div><div class="group-grid">${items.map(caseCard).join('')}</div></div>`});
+ return html||'<div class="empty">Пусто</div>';
 }
 function matchCase(c){const q=state.search.toLowerCase();return !q||[c.title,c.debtor_name,c.debtor_identifier].filter(Boolean).some(x=>String(x).toLowerCase().includes(q))}
 function caseCard(c){
  return `<article class="card" onclick="openCase('${c.id}')"><div class="card-title">${esc(c.title)}</div>${c.debtor_name?`<div class="card-sub">${esc(c.debtor_name)}</div>`:''}
- ${c.source?`<div class="meta"><span class="chip">${esc(SOURCE_LABEL[c.source])}</span></div>`:''}
+ ${c.source?`<div class="meta"><span class="chip">${esc(SOURCE_LABEL[c.source])}</span></div>`:'<div class="meta"><span class="chip">не установлено</span></div>'}
  ${c.profit!==null&&c.profit!==undefined?`<div class="card-sub" style="margin-top:8px">${fmtMoney(c.profit)}</div>`:''}
  <button class="btn card-action" onclick="event.stopPropagation();openCase('${c.id}')">Открыть</button></article>`
 }
@@ -175,14 +160,10 @@ function renderTasks(main){
  main.innerHTML=header('Задачи')+`<div class="card"><div class="card-title">Задачи v2</div><div class="card-sub">Подключим существующие задачи к новой модели организаций и дел без потери истории.</div></div>`
 }
 function renderSettings(main){
- main.innerHTML=header('Настройки')+
- `<section class="card"><div class="card-title">Воронки</div><div class="card-sub">Продажи — системная воронка. Юридических воронок может быть несколько.</div>
- <div class="list" style="margin-top:12px">${state.pipelines.map(p=>`<div class="row"><div><strong>${esc(p.name)}</strong><div class="card-sub">${p.entity_type==='organization'?'Организации':'Дела'}</div></div><div class="actions">${p.is_system?'':`<button class="btn" onclick="renamePipeline('${p.id}')">Переименовать</button><button class="btn danger" onclick="deletePipeline('${p.id}')">Удалить</button>`}</div></div>`).join('')}</div>
- <button class="btn primary" style="margin-top:12px" onclick="newLegalPipeline()">+ Юридическая воронка</button></section>
- <section class="card"><div class="card-title">Шаблоны</div><div class="card-sub">Перенос данных из одной или нескольких карточек в шаблонные документы.</div><button class="btn" style="margin-top:10px" onclick="toast('Функция «Создать шаблон» — в разработке')">Создать шаблон</button></section>
- <section class="card"><div class="card-title">Тема</div><select class="theme-select" style="max-width:260px" onchange="state.theme=this.value;applyTheme()"><option value="system">⚙️ Тема системы</option><option value="light">☀️ Дневная</option><option value="dark">🌙 Ночная</option></select></section>`
+ main.innerHTML=header('Настройки')+`<div class="settings-grid"><section class="card settings-card"><div class="card-title">Тема CRM</div><div class="card-sub">Выберите, как должна выглядеть CRM.</div><select class="theme-select" style="max-width:280px;margin-top:12px" onchange="state.theme=this.value;applyTheme();render()"><option value="system" ${state.theme==='system'?'selected':''}>⚙️ Тема системы</option><option value="light" ${state.theme==='light'?'selected':''}>☀️ Дневная</option><option value="dark" ${state.theme==='dark'?'selected':''}>🌙 Ночная</option></select></section>
+ <section class="card settings-card"><div class="card-title">Шаблоны</div><div class="card-sub">Перенос данных из одной или нескольких карточек в шаблонные документы.</div><button class="btn" style="margin-top:10px" onclick="toast('Функция «Создать шаблон» — в разработке')">Создать шаблон</button></section>
+ <section class="card settings-card"><div class="card-title">Версия</div><div class="card-sub">PravoDom24 CRM v2.1</div></section></div>`
 }
-
 async function reload(){
  const [{data:p,error:pe},{data:s,error:se},{data:o,error:oe},{data:c,error:ce},{data:g,error:ge}]=await Promise.all([
   sb.from('crm_pipelines').select('*').eq('active',true).order('sort_order'),
@@ -198,25 +179,29 @@ function modal(html){document.querySelector('.overlay')?.remove();const d=docume
 function closeModal(){document.querySelector('.overlay')?.remove()}
 
 function sourceButtons(current='not_set',field='source'){
- return `<div class="source-box">${Object.entries(SOURCE_LABEL).map(([k,v])=>`<button type="button" class="source ${current===k?'active':''}" data-source="${k}" onclick="this.parentNode.querySelectorAll('.source').forEach(x=>x.classList.remove('active'));this.classList.add('active');this.parentNode.dataset.value='${k}'">${esc(v)}</button>`).join('')}</div>`
+ return `<div class="source-box">${Object.entries(SOURCE_LABEL).map(([k,v])=>`<button type="button" class="source ${current===k?'active':''}" data-source="${k}" onclick="selectSource(this,'${k}')">${esc(v)}</button>`).join('')}</div>`
 }
+async function selectSource(btn,value){const box=btn.parentNode;box.querySelectorAll('.source').forEach(x=>x.classList.remove('active'));btn.classList.add('active');box.dataset.value=value;if(box.dataset.entity==='org'){const id=box.dataset.id;const {error}=await sb.from('crm_organizations').update({source:value,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else await reload()}else if(box.dataset.entity==='case'){const id=box.dataset.id;const {error}=await sb.from('crm_cases').update({source:value,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else await reload()}}
+
 function newOrg(){
  modal(`<div class="modal-head"><div><h2>Новая организация</h2><div class="card-sub">Минимум данных сейчас. Остальное можно добавить позже.</div></div><button class="close" onclick="closeModal()">×</button></div>
  <form id="orgForm" class="grid" style="margin-top:16px"><div class="field full"><label>Название организации</label><input name="name" required></div><div class="field"><label>Контакт</label><input name="contact_name"></div><div class="field"><label>Телефон</label><input name="phone"></div><div class="field"><label>Email</label><input name="email"></div><div class="field"><label>ИНН</label><input name="inn"></div><div class="field full"><label>Откуда пришёл</label><div id="orgSource" data-value="not_set">${sourceButtons()}</div></div><div class="field full"><label>Заметка</label><textarea name="notes"></textarea></div><div class="field full"><button class="btn primary">Создать</button></div></form>`);
  document.getElementById('orgForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const p=pipelineFor('organization')[0],s=stagesFor(p?.id)[0];const {error}=await sb.from('crm_organizations').insert({name:f.get('name'),contact_name:f.get('contact_name')||null,phone:f.get('phone')||null,email:f.get('email')||null,inn:f.get('inn')||null,notes:f.get('notes')||null,source:document.getElementById('orgSource').dataset.value,owner_id:state.user.id,sales_pipeline_id:p?.id||null,sales_stage_id:s?.id||null});if(error)toast(error.message);else{closeModal();await reload();toast('Организация создана')}} 
 }
 function newCase(){
- const p=pipelineFor('case')[0];if(!p){toast('Сначала создайте юридическую воронку');newLegalPipeline();return}
- const s=stagesFor(p.id)[0];
- modal(`<div class="modal-head"><div><h2>Новое дело</h2><div class="card-sub">Отдельная карточка дела. Позже её можно объединить с другими делами в группу.</div></div><button class="close" onclick="closeModal()">×</button></div>
- <form id="caseForm" class="grid" style="margin-top:16px"><div class="field full"><label>Название дела</label><input name="title" placeholder="Например: Должник Иванов" required></div><div class="field"><label>Должник</label><input name="debtor_name"></div><div class="field"><label>Идентификатор</label><input name="debtor_identifier"></div><div class="field"><label>Прибыль</label><input name="profit" type="number" step="0.01"></div><div class="field full"><label>Откуда пришёл</label><div id="caseSource" data-value="not_set">${sourceButtons()}</div></div><div class="field full"><label>Заметки</label><textarea name="notes"></textarea></div><div class="field full"><button class="btn primary">Создать дело</button></div></form>`);
- document.getElementById('caseForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_cases').insert({title:f.get('title'),debtor_name:f.get('debtor_name')||null,debtor_identifier:f.get('debtor_identifier')||null,profit:f.get('profit')?Number(f.get('profit')):null,notes:f.get('notes')||null,source:document.getElementById('caseSource').dataset.value,owner_id:state.user.id,legal_pipeline_id:p.id,legal_stage_id:s?.id||null});if(error)toast(error.message);else{closeModal();await reload();toast('Дело создано')}}
+ const ps=pipelineFor('case');if(!ps.length){toast('Сначала создайте юридическую воронку');newLegalPipeline();return}
+ const p=(state.legalPipelineView&&state.legalPipelineView!=='all'?ps.find(x=>x.id===state.legalPipelineView):ps[0])||ps[0]; const s=stagesFor(p.id)[0];
+ const orgOptions=state.orgs.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('');
+ const groupOptions=state.groups.map(g=>`<option value="${g.id}">${esc(g.name)}</option>`).join('');
+ modal(`<div class="modal-head"><div><h2>Новое дело</h2><div class="card-sub">Отдельная карточка дела. Её можно связать с организацией и группой.</div></div><button class="close" onclick="closeModal()">×</button></div>
+ <form id="caseForm" class="grid" style="margin-top:16px"><div class="field full"><label>Название дела</label><input name="title" placeholder="Например: Должник Иванов" required></div><div class="field"><label>Организация</label><select name="organization_id"><option value="">Не указана</option>${orgOptions}</select></div><div class="field"><label>Группа</label><select name="group_id"><option value="">Без группы</option>${groupOptions}</select></div><div class="field"><label>Должник</label><input name="debtor_name"></div><div class="field"><label>Идентификатор</label><input name="debtor_identifier"></div><div class="field"><label>Прибыль</label><input name="profit" type="number" step="0.01"></div><div class="field full"><label>Откуда пришёл</label><div id="caseSource" data-value="not_set">${sourceButtons()}</div></div><div class="field full"><label>Заметки</label><textarea name="notes"></textarea></div><div class="field full"><button class="btn primary">Создать дело</button></div></form>`);
+ document.getElementById('caseForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_cases').insert({title:f.get('title'),organization_id:f.get('organization_id')||null,group_id:f.get('group_id')||null,debtor_name:f.get('debtor_name')||null,debtor_identifier:f.get('debtor_identifier')||null,profit:f.get('profit')?Number(f.get('profit')):null,notes:f.get('notes')||null,source:document.getElementById('caseSource').dataset.value,owner_id:state.user.id,legal_pipeline_id:p.id,legal_stage_id:s?.id||null});if(error)toast(error.message);else{closeModal();await reload();toast('Дело создано')}}
 }
 function openOrg(id){
  const o=state.orgs.find(x=>x.id===id);if(!o)return;
  const stages=state.stages.filter(s=>s.pipeline_id===o.sales_pipeline_id);
  modal(`<div class="modal-head"><div><h2>${esc(o.name)}</h2><div class="card-sub">${o.contact_name?esc(o.contact_name):'Контакт не указан'}</div></div><button class="close" onclick="closeModal()">×</button></div>
- <div class="section"><h3>Откуда пришёл</h3>${sourceButtons(o.source||'not_set')}</div>
+ <div class="section"><h3>Откуда пришёл</h3><div id="orgLiveSource" data-value="${o.source||'not_set'}" data-entity="org" data-id="${id}">${sourceButtons(o.source||'not_set')}</div></div>
  <div class="section"><h3>Продажный этап</h3><select class="theme-select" onchange="moveOrg('${id}',this.value)">${stages.map(s=>`<option value="${s.id}" ${s.id===o.sales_stage_id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
  ${o.phone||o.email||o.inn?`<div class="section"><h3>Контакты</h3><div class="meta">${o.phone?`<span class="chip">${esc(o.phone)}</span>`:''}${o.email?`<span class="chip">${esc(o.email)}</span>`:''}${o.inn?`<span class="chip">ИНН ${esc(o.inn)}</span>`:''}</div></div>`:''}
  ${o.notes?`<div class="section"><h3>Заметка</h3><div>${esc(o.notes)}</div></div>`:''}
@@ -230,42 +215,53 @@ function openCase(id){
  const stages=state.stages.filter(s=>s.pipeline_id===c.legal_pipeline_id);
  const group=c.group_id?state.groups.find(g=>g.id===c.group_id):null;
  modal(`<div class="modal-head"><div><h2>${esc(c.title)}</h2><div class="card-sub">${c.debtor_name?esc(c.debtor_name):'Должник не указан'}</div></div><button class="close" onclick="closeModal()">×</button></div>
- <div class="section"><h3>Откуда пришёл</h3>${sourceButtons(c.source||'not_set')}</div>
+ <div class="section"><h3>Откуда пришёл</h3><div id="caseLiveSource" data-value="${c.source||'not_set'}" data-entity="case" data-id="${id}">${sourceButtons(c.source||'not_set')}</div></div>
  <div class="section"><h3>Юридический этап</h3><select class="theme-select" onchange="moveCase('${id}',this.value)">${stages.map(s=>`<option value="${s.id}" ${s.id===c.legal_stage_id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
  ${c.profit!==null&&c.profit!==undefined?`<div class="section"><h3>Итог с прибылью</h3><strong>${fmtMoney(c.profit)}</strong></div>`:''}
- ${group?`<div class="section"><h3>Группа</h3><button class="btn" onclick="openGroup('${group.id}')">${esc(group.name)} · открыть группу</button></div>`:''}
+ ${c.organization_id?`<div class="section"><h3>Организация</h3><button class="btn" onclick="openOrg('${c.organization_id}')">${esc(state.orgs.find(o=>o.id===c.organization_id)?.name||'Открыть организацию')}</button></div>`:''}${group?`<div class="section"><h3>Группа</h3><button class="btn" onclick="openGroup('${group.id}')">${esc(group.name)} · открыть группу</button></div>`:''}
  <div class="section"><button class="btn" onclick="toast('Создать шаблон — в разработке')">Создать шаблон</button></div>
  <div class="section"><button class="btn" onclick="editCase('${id}')">Редактировать</button></div>`);
 }
 async function moveCase(id,stage){const {error}=await sb.from('crm_cases').update({legal_stage_id:stage,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{await reload();closeModal()}}
-function editCase(id){const c=state.cases.find(x=>x.id===id);modal(`<div class="modal-head"><h2>Редактировать дело</h2><button class="close" onclick="closeModal()">×</button></div><form id="ec" class="grid" style="margin-top:16px"><div class="field full"><label>Название</label><input name="title" value="${esc(c.title)}" required></div><div class="field"><label>Должник</label><input name="debtor_name" value="${esc(c.debtor_name||'')}"></div><div class="field"><label>Идентификатор</label><input name="debtor_identifier" value="${esc(c.debtor_identifier||'')}"></div><div class="field"><label>Прибыль</label><input name="profit" type="number" step="0.01" value="${esc(c.profit??'')}"></div><div class="field full"><label>Заметки</label><textarea name="notes">${esc(c.notes||'')}</textarea></div><div class="field full"><button class="btn primary">Сохранить</button></div></form>`);
-document.getElementById('ec').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_cases').update({title:f.get('title'),debtor_name:f.get('debtor_name')||null,debtor_identifier:f.get('debtor_identifier')||null,profit:f.get('profit')?Number(f.get('profit')):null,notes:f.get('notes')||null,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{closeModal();await reload();toast('Сохранено')}}}
+function editCase(id){const c=state.cases.find(x=>x.id===id);if(!c)return;const orgOptions=state.orgs.map(o=>`<option value="${o.id}" ${o.id===c.organization_id?'selected':''}>${esc(o.name)}</option>`).join('');const groupOptions=state.groups.map(g=>`<option value="${g.id}" ${g.id===c.group_id?'selected':''}>${esc(g.name)}</option>`).join('');modal(`<div class="modal-head"><h2>Редактировать дело</h2><button class="close" onclick="closeModal()">×</button></div><form id="ec" class="grid" style="margin-top:16px"><div class="field full"><label>Название</label><input name="title" value="${esc(c.title)}" required></div><div class="field"><label>Организация</label><select name="organization_id"><option value="">Не указана</option>${orgOptions}</select></div><div class="field"><label>Группа</label><select name="group_id"><option value="">Без группы</option>${groupOptions}</select></div><div class="field"><label>Должник</label><input name="debtor_name" value="${esc(c.debtor_name||'')}"></div><div class="field"><label>Идентификатор</label><input name="debtor_identifier" value="${esc(c.debtor_identifier||'')}"></div><div class="field"><label>Прибыль</label><input name="profit" type="number" step="0.01" value="${esc(c.profit??'')}"></div><div class="field full"><label>Откуда пришёл</label><div id="ecSource" data-value="${c.source||'not_set'}">${sourceButtons(c.source||'not_set')}</div></div><div class="field full"><label>Заметки</label><textarea name="notes">${esc(c.notes||'')}</textarea></div><div class="field full"><button class="btn primary">Сохранить</button></div></form>`);document.getElementById('ec').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_cases').update({title:f.get('title'),organization_id:f.get('organization_id')||null,group_id:f.get('group_id')||null,debtor_name:f.get('debtor_name')||null,debtor_identifier:f.get('debtor_identifier')||null,profit:f.get('profit')!==''?Number(f.get('profit')):null,source:document.getElementById('ecSource').dataset.value,notes:f.get('notes')||null,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{closeModal();await reload();toast('Сохранено')}}}
 function openGroup(id){
  const g=state.groups.find(x=>x.id===id),cs=state.cases.filter(c=>c.group_id===id);
  modal(`<div class="modal-head"><div><h2>${esc(g?.name||'Группа')}</h2><div class="card-sub">${cs.length} отдельных дел</div></div><button class="close" onclick="closeModal()">×</button></div>
  <div class="multi" style="margin-top:14px">${cs.map(c=>`<button class="btn" onclick="openCase('${c.id}')">${esc(c.title)}</button>`).join('')}</div>
- <div class="section"><h3>Групповое действие</h3><button class="btn" onclick="toast('Массовое заполнение полей — подготовлено в архитектуре, UI будет расширен следующим шагом')">Заполнить выбранные дела одновременно</button></div>`);
+ <div class="section"><h3>Групповое действие</h3><div class="card-sub" style="margin-bottom:10px">Выберите несколько дел. Каждое дело остаётся самостоятельным.</div><div id="groupSelection">${cs.map(c=>`<label style="display:flex;gap:8px;align-items:center;padding:7px 0"><input type="checkbox" value="${c.id}"> ${esc(c.title)}</label>`).join('')}</div><button class="btn" style="margin-top:8px" onclick="bulkEditSelected('${id}')">Заполнить выбранные дела одновременно</button></div>`);
+}
+function newGroup(){
+ const orgOptions=state.orgs.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('');
+ modal(`<div class="modal-head"><div><h2>Новая группа дел</h2><div class="card-sub">Группа только связывает самостоятельные карточки.</div></div><button class="close" onclick="closeModal()">×</button></div><form id="groupForm" style="margin-top:16px"><div class="field"><label>Название группы</label><input name="name" required placeholder="Например: Пакет УК №12"></div><div class="field" style="margin-top:10px"><label>Организация</label><select name="organization_id"><option value="">Не указана</option>${orgOptions}</select></div><button class="btn primary" style="margin-top:12px">Создать группу</button></form>`);
+ document.getElementById('groupForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {data,error}=await sb.from('crm_case_groups').insert({name:f.get('name').trim(),organization_id:f.get('organization_id')||null,created_by:state.user.id}).select().single();if(error)toast(error.message);else{closeModal();await reload();toast('Группа создана')}}
+}
+function bulkEditSelected(groupId){const ids=[...document.querySelectorAll('#groupSelection input:checked')].map(x=>x.value);if(!ids.length){toast('Выберите хотя бы одно дело');return}bulkEditCases(ids,groupId)}
+function bulkEditCases(ids,groupId){
+ modal(`<div class="modal-head"><div><h2>Общее заполнение</h2><div class="card-sub">Изменение применится к ${ids.length} выбранным делам.</div></div><button class="close" onclick="closeModal()">×</button></div><form id="bulkForm" class="grid" style="margin-top:16px"><div class="field"><label>Откуда пришёл</label><select name="source"><option value="">Не менять</option><option value="mailing">с рассылок</option><option value="dmitry_base">база клиентов Дмитрия</option><option value="not_set">не установлено</option></select></div><div class="field"><label>Прибыль</label><input name="profit" type="number" step="0.01" placeholder="Не менять"></div><div class="field full"><label>Заметка</label><textarea name="notes" placeholder="Не менять"></textarea></div><div class="field full"><button class="btn primary">Применить ко всем</button></div></form>`);
+ document.getElementById('bulkForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),patch={updated_at:new Date().toISOString()};if(f.get('source'))patch.source=f.get('source');if(f.get('profit')!=='')patch.profit=Number(f.get('profit'));if(f.get('notes'))patch.notes=f.get('notes');const {error}=await sb.from('crm_cases').update(patch).in('id',ids);if(error)toast(error.message);else{closeModal();await reload();toast('Данные обновлены')}}
 }
 async function newLegalPipeline(){
  const name=prompt('Название юридической воронки');if(!name?.trim())return;
  const {data,error}=await sb.from('crm_pipelines').insert({name:name.trim(),entity_type:'case',is_system:false,sort_order:state.pipelines.length,created_by:state.user.id}).select().single();
- if(error)toast(error.message);else{await reload();toast('Воронка создана')}
+ if(error)toast(error.message);else{state.legalPipelineView=data.id;await reload();toast('Воронка создана')}
 }
 async function renamePipeline(id){const p=state.pipelines.find(x=>x.id===id);const name=prompt('Новое название',p?.name);if(!name?.trim())return;const {error}=await sb.from('crm_pipelines').update({name:name.trim()}).eq('id',id);if(error)toast(error.message);else await reload()}
-async function deletePipeline(id){const p=state.pipelines.find(x=>x.id===id);if(!p)return;if(!confirm(`Удалить воронку «${p.name}»? Карточки не удаляются. Сначала перенесите их в другую воронку.`))return;const used=state.cases.some(c=>c.legal_pipeline_id===id);if(used){toast('В воронке есть дела. Сначала перенесите их в другую воронку.');return}const {error}=await sb.from('crm_pipelines').update({active:false}).eq('id',id);if(error)toast(error.message);else await reload()}
+async function deletePipeline(id){const p=state.pipelines.find(x=>x.id===id);if(!p)return;if(!confirm(`Удалить воронку «${p.name}»? Дела не удаляются.`))return;const used=state.cases.some(c=>c.legal_pipeline_id===id);if(used){toast('В воронке есть дела. Сначала перенесите их в другую воронку.');return}const {error}=await sb.from('crm_pipelines').update({active:false}).eq('id',id);if(error)toast(error.message);else{state.legalPipelineView='all';await reload()}}
 async function newStage(pid){const name=prompt('Название новой колонки');if(!name?.trim())return;const max=Math.max(-1,...stagesFor(pid).map(s=>s.sort_order));const {error}=await sb.from('crm_pipeline_stages').insert({pipeline_id:pid,name:name.trim(),sort_order:max+1});if(error)toast(error.message);else await reload()}
-function newStageUnused(){toast('')}
+async function renameStage(id){const s=state.stages.find(x=>x.id===id);const name=prompt('Новое название колонки',s?.name);if(!name?.trim())return;const {error}=await sb.from('crm_pipeline_stages').update({name:name.trim()}).eq('id',id);if(error)toast(error.message);else await reload()}
+async function deleteStage(id){const s=state.stages.find(x=>x.id===id);if(!s)return;const used=state.cases.filter(c=>c.legal_stage_id===id);if(used.length){const targets=stagesFor(s.pipeline_id).filter(x=>x.id!==id);if(!targets.length){toast('Нельзя удалить единственную колонку с делами');return}const options=targets.map((x,i)=>`${i+1}. ${x.name}`).join('\n');const pick=prompt(`В колонке есть ${used.length} дел. Куда их перенести?\\n${options}\\nВведите номер`);const target=targets[Number(pick)-1];if(!target)return;const {error:moveError}=await sb.from('crm_cases').update({legal_stage_id:target.id,updated_at:new Date().toISOString()}).eq('legal_stage_id',id);if(moveError){toast(moveError.message);return}}
+ const {error}=await sb.from('crm_pipeline_stages').update({active:false}).eq('id',id);if(error)toast(error.message);else await reload()}
 async function quickOrg(id){openOrg(id)}
 
 async function boot(){
  state.theme=localStorage.getItem('pd24_theme')||'system';applyTheme();
  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
  const {data:{session}}=await sb.auth.getSession();
- if(session){try{const ok=await ensureMember();if(!ok){toast('Нет доступа к CRM');await sb.auth.signOut();showLogin();return}state.user=session.user;await reload();shell()}catch(e){console.error(e);toast(e.message||'Ошибка загрузки')}}else showLogin();
+ if(session){try{const ok=await ensureMember();if(!ok){toast('Нет доступа к CRM');await sb.auth.signOut();showLogin();return}state.user=session.user;await reload()}catch(e){console.error(e);toast(e.message||'Ошибка загрузки')}}else showLogin();
+ sb.channel('crm-v2-live').on('postgres_changes',{event:'*',schema:'public',table:'crm_pipelines'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_pipeline_stages'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_organizations'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_cases'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_case_groups'},()=>reload()).subscribe();
  sb.auth.onAuthStateChange(async(_e,s)=>{if(s?.user&&!state.user){state.user=s.user;try{if(await ensureMember())await reload()}catch(e){console.error(e)}}});
 }
 boot();
 </script>
 </body>
 </html>
-
