@@ -72,20 +72,7 @@ function fmtDate(s){if(!s)return '';return parseDate(s).toLocaleDateString('ru-R
 function todayKey(){return localDateKey()}
 function pipelineFor(type){return state.pipelines.filter(p=>p.entity_type===type&&p.active)}
 function stagesFor(pid){return state.stages.filter(s=>s.pipeline_id===pid&&s.active).sort((a,b)=>a.sort_order-b.sort_order)}
-function ensureMember(){return sb.rpc('is_crm_member').then(({data,error})=>{if(error)throw error;return data===true})async function testYandexFromCRM() {
-  const { data, error } = await sb.functions.invoke(
-    'yandex-disk'
-  );
-
-  console.log('YANDEX TEST:', data);
-  console.log('YANDEX ERROR:', error);
-
-  alert(JSON.stringify(
-    data || error,
-    null,
-    2
-  ));
-}}
+function ensureMember(){return sb.rpc('is_crm_member').then(({data,error})=>{if(error)throw error;return data===true})}
 function applyTheme(){document.body.classList.remove('dark','system','light');if(state.theme==='dark')document.body.classList.add('dark');else if(state.theme==='light')document.body.classList.add('light');else if(state.theme==='system')document.body.classList.add('system');localStorage.setItem('pravodom_theme',state.theme)}
 function pendingTasks(){return state.tasks.filter(t=>!t.completed)}
 function todayPending(){return pendingTasks().filter(t=>t.due_date===todayKey())}
@@ -164,19 +151,5 @@ async function boot(){state.theme=localStorage.getItem('pravodom_theme')||'syste
 document.addEventListener('click',e=>{if(!e.target.closest('.soft-select'))document.querySelectorAll('.soft-select.open').forEach(x=>x.classList.remove('open'))});
 boot();
 </script>
-<button
-  onclick="testYandexFromCRM()"
-  style="
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    z-index:99999;
-    padding:12px 18px;
-    border:0;
-    border-radius:14px;
-    cursor:pointer;
-  "
->
-  Проверить Яндекс.Диск
-</button></body>
+</body>
 </html>
