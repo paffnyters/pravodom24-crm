@@ -80,7 +80,7 @@ function overdueTasks(){return pendingTasks().filter(t=>t.due_date&&t.due_date<t
 function showLogin(){document.getElementById('root').innerHTML=`<div class="login"><div class="loginbox"><h1>CRM Праводом.рф</h1><form id="loginForm"><input id="email" type="email" placeholder="Email" required><input id="password" type="password" placeholder="Пароль" required><button class="btn primary">Войти</button></form></div></div>`;document.getElementById('loginForm').onsubmit=async e=>{e.preventDefault();try{const {error}=await sb.auth.signInWithPassword({email:email.value,password:password.value});if(error)throw error;await startApp()}catch(x){toast(x.message||'Ошибка входа')}}}
 function nav(){const hasToday=todayPending().length>0;return `<aside class="sidebar"><div class="logo">CRM Праводом.рф</div><div class="sidebar-nav"><div class="nav"><button class="${state.view==='today'?'active ':''}${hasToday?'today-active':''}" onclick="setView('today')">Сегодня ${hasToday?'<span class="today-dot"></span>':''}</button><button class="${state.view==='sales'?'active':''}" onclick="setView('sales')">Продажи</button><button class="${state.view==='legal'?'active':''}" onclick="setView('legal')">Юридическая работа</button><button class="${state.view==='clients'?'active':''}" onclick="setView('clients')">Клиенты</button><button class="${state.view==='tasks'?'active':''}" onclick="setView('tasks')">Задачи</button></div></div><div class="sidebar-bottom"><button class="btn settings-btn ${state.view==='settings'?'primary':''}" onclick="setView('settings')">Настройки</button><div class="user">${esc(state.user?.email||'')}</div></div></aside>`}
 function bottomNav(){const hasToday=todayPending().length>0;return `<nav class="bottomnav"><button class="${state.view==='today'?'active ':''}${hasToday?'today-active':''}" onclick="setView('today')">Сегодня${hasToday?' •':''}</button><button class="${state.view==='sales'?'active':''}" onclick="setView('sales')">Продажи</button><button class="${state.view==='legal'?'active':''}" onclick="setView('legal')">Юр. работа</button><button class="${state.view==='tasks'?'active':''}" onclick="setView('tasks')">Задачи</button><button class="${state.view==='settings'?'active':''}" onclick="setView('settings')">Настройки</button></nav>`}
-function shell(){document.getElementById('root').innerHTML=`<div class="app">${nav()}<main id="main"></main></div>${bottomNav()}`;render()}
+function shell(){document.getElementById('root').innerHTML=`<div class="app">${nav()}<main id="main"></main></div>${bottomNav()}<button id="yandexTestButton" class="btn" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:var(--panel);box-shadow:var(--shadow);" onclick="testYandexFromCRM()">Проверить Яндекс.Диск</button>`;render()}
 function setView(v){state.view=v;state.search='';shell()}
 function header(title,button=''){return `<div class="top"><div><h1>${title}</h1></div><div class="actions">${button}</div></div>`}
 function searchBar(){return `<input class="search" placeholder="Поиск" value="${esc(state.search)}" oninput="state.search=this.value;render()">`}
@@ -146,24 +146,27 @@ async function deleteStage(id){const s=state.stages.find(x=>x.id===id);if(!s)ret
 function newTask(date=todayKey(),orgId='',caseId=''){const orgOptions=state.orgs.map(o=>`<option value="${o.id}" ${o.id===orgId?'selected':''}>${esc(o.name)}</option>`).join('');const caseOptions=state.cases.map(c=>`<option value="${c.id}" ${c.id===caseId?'selected':''}>${esc(c.title)}</option>`).join('');modal(`<div class="modal-head"><h2>Новая задача</h2><button class="close" onclick="closeModal()">×</button></div><form id="taskForm" class="grid" style="margin-top:16px"><div class="field full"><label>Задача</label><input name="title" required></div><div class="field"><label>Дата</label><input name="due_date" type="date" value="${esc(date||todayKey())}"></div><div class="field"><label>Время</label><input name="due_time" type="time"></div><div class="field"><label>Организация</label><select name="organization_id"><option value="">Не указана</option>${orgOptions}</select></div><div class="field"><label>Дело</label><select name="case_id"><option value="">Не указано</option>${caseOptions}</select></div><div class="field full"><label>Заметка</label><textarea name="notes"></textarea></div><div class="field full"><button class="btn primary">Создать</button></div></form>`);document.getElementById('taskForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_tasks').insert({title:f.get('title'),due_date:f.get('due_date')||null,due_time:f.get('due_time')||null,organization_id:f.get('organization_id')||null,case_id:f.get('case_id')||null,notes:f.get('notes')||null,owner_id:state.user.id});if(error)toast(error.message);else{closeModal();await reload();toast('Задача создана')}}}
 function editTask(id){const t=state.tasks.find(x=>x.id===id);if(!t)return;const orgOptions=state.orgs.map(o=>`<option value="${o.id}" ${o.id===t.organization_id?'selected':''}>${esc(o.name)}</option>`).join('');const caseOptions=state.cases.map(c=>`<option value="${c.id}" ${c.id===t.case_id?'selected':''}>${esc(c.title)}</option>`).join('');modal(`<div class="modal-head"><h2>Редактировать задачу</h2><button class="close" onclick="closeModal()">×</button></div><form id="editTaskForm" class="grid" style="margin-top:16px"><div class="field full"><label>Задача</label><input name="title" value="${esc(t.title)}" required></div><div class="field"><label>Дата</label><input name="due_date" type="date" value="${esc(t.due_date||'')}"></div><div class="field"><label>Время</label><input name="due_time" type="time" value="${esc(t.due_time||'')}"></div><div class="field"><label>Организация</label><select name="organization_id"><option value="">Не указана</option>${orgOptions}</select></div><div class="field"><label>Дело</label><select name="case_id"><option value="">Не указано</option>${caseOptions}</select></div><div class="field full"><label>Заметка</label><textarea name="notes">${esc(t.notes||'')}</textarea></div><div class="field full"><button class="btn primary">Сохранить</button></div></form>`);document.getElementById('editTaskForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_tasks').update({title:f.get('title'),due_date:f.get('due_date')||null,due_time:f.get('due_time')||null,organization_id:f.get('organization_id')||null,case_id:f.get('case_id')||null,notes:f.get('notes')||null,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{closeModal();await reload();toast('Сохранено')}}}
 async function toggleTask(id,done){const {error}=await sb.from('crm_tasks').update({completed:done,completed_at:done?new Date().toISOString():null,updated_at:new Date().toISOString()}).eq('id',id);if(error){toast(error.message);return}await reload()}
+async function testYandexFromCRM(){
+  const button=document.getElementById('yandexTestButton');
+  if(button){button.disabled=true;button.textContent='Проверяем…'}
+  try{
+    if(!sb)throw new Error('Supabase ещё не инициализирован');
+    const {data,error}=await sb.functions.invoke('yandex-disk');
+    console.log('YANDEX TEST:',data);
+    console.log('YANDEX ERROR:',error);
+    if(error)throw error;
+    alert(JSON.stringify(data,null,2));
+  }catch(error){
+    console.error('YANDEX TEST ERROR:',error);
+    alert(JSON.stringify({ok:false,error:error?.message||String(error)},null,2));
+  }finally{
+    if(button){button.disabled=false;button.textContent='Проверить Яндекс.Диск'}
+  }
+}
 async function startApp(){if(!sb)sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const ok=await ensureMember();if(!ok){toast('Нет доступа к CRM');await sb.auth.signOut();showLogin();return}const {data:{session}}=await sb.auth.getSession();state.user=session?.user||state.user;if(!state.user){showLogin();return}await reload()}
 async function boot(){state.theme=localStorage.getItem('pravodom_theme')||'system';applyTheme();sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const {data:{session}}=await sb.auth.getSession();if(session){try{const ok=await ensureMember();if(!ok){toast('Нет доступа к CRM');await sb.auth.signOut();showLogin();return}state.user=session.user;await reload()}catch(e){console.error(e);showFatal(e)}}else showLogin();sb.channel('pravodom-live').on('postgres_changes',{event:'*',schema:'public',table:'crm_pipelines'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_pipeline_stages'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_organizations'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_cases'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_case_groups'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_tasks'},()=>reload()).subscribe();sb.auth.onAuthStateChange(async(_e,s)=>{if(s?.user&&!state.user){state.user=s.user;try{if(await ensureMember())await reload()}catch(e){showFatal(e)}}else if(!s){state.user=null;showLogin()}})}
 document.addEventListener('click',e=>{if(!e.target.closest('.soft-select'))document.querySelectorAll('.soft-select.open').forEach(x=>x.classList.remove('open'))});
 boot();
 </script>
-<button
-  onclick="testYandexFromCRM()"
-  style="
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    z-index:99999;
-    padding:12px 18px;
-    border:0;
-    border-radius:14px;
-    cursor:pointer;
-  "
->
-  Проверить Яндекс.Диск
-</button></body>
+</body>
 </html>
