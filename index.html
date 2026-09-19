@@ -126,7 +126,7 @@ body.dark .btn.save-card{background:#20352b;color:#a9e2bf;border-color:#31533f}
 body.compact-ui .modal-card-layout{grid-template-columns:var(--case-split,minmax(0,1fr) 6px minmax(320px,.9fr));gap:0}
 body.compact-ui .detail-main{padding-right:14px;min-width:0}
 body.compact-ui .detail-resizer{cursor:col-resize;background:transparent;position:relative;margin:0 -3px;z-index:2;min-width:6px;flex:none;width:6px}
-body.compact-ui .detail-resizer::before{content:'';position:absolute;inset:0 2px;background:var(--line);border-radius:99px;transition:background .15s}
+body.compact-ui .detail-resizer::before{content:'';position:absolute;inset:0 2px;background:transparent;border-radius:99px;transition:background .15s}
 body.compact-ui .detail-resizer:hover::before,body.compact-ui .detail-resizer.active::before{background:#f08a24}
 body.compact-ui .detail-side{border-left:1px solid var(--line);padding-left:18px;padding-right:0;min-width:0}
 /* Мягкие тени для более приятного вида (обе темы) */
@@ -195,31 +195,31 @@ body.dark .column .card,body.system[data-theme="dark"] .column .card{box-shadow:
 .column:has(.empty) .column-head{opacity:0.7}
 .column:has(.empty) .empty{color:var(--muted);font-size:12px;font-style:italic;padding:24px 8px;text-align:center}
 
-/* v3.10 — Liquid Glass тема в стиле Telegram для iOS */
+/* v3.11 — Liquid Glass (работает поверх light/dark) */
 body.liquid-glass{
-  --bg-base:var(--bg);
   --panel:rgba(255,255,255,0.55);
-  --panel2:rgba(255,255,255,0.35);
-  --line:rgba(255,255,255,0.35);
+  --panel2:rgba(255,255,255,0.32);
+  --line:rgba(255,255,255,0.45);
   --glass-blur:30px;
   --glass-saturate:180%;
   position:relative;
   overflow-x:hidden;
 }
-body.liquid-glass.dark{
+body.liquid-glass.dark,
+body.system.liquid-glass[data-theme="dark"]{
   --panel:rgba(28,30,36,0.62);
-  --panel2:rgba(40,42,48,0.48);
+  --panel2:rgba(40,42,48,0.45);
   --line:rgba(255,255,255,0.08);
 }
-/* Цветные blob'ы на фоне body — как живые цветные пятна iOS */
+/* Цветные blob'ы на фоне */
 body.liquid-glass::before,body.liquid-glass::after{
   content:'';
   position:fixed;
   width:55vw;
   height:55vw;
   border-radius:50%;
-  filter:blur(70px);
-  opacity:0.42;
+  filter:blur(80px);
+  opacity:0.4;
   z-index:-1;
   pointer-events:none;
   animation:blobMove 22s ease-in-out infinite;
@@ -242,7 +242,7 @@ body.liquid-glass.dark::after{background:radial-gradient(circle,#a554a0 0%,trans
   33%{transform:translate(50px,-30px) scale(1.08)}
   66%{transform:translate(-30px,40px) scale(0.95)}
 }
-/* Sidebar — полупрозрачный со стеклянным blur */
+/* Sidebar — стекло */
 body.liquid-glass .sidebar{
   background:var(--panel);
   backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -251,37 +251,37 @@ body.liquid-glass .sidebar{
   box-shadow:0 10px 40px rgba(0,0,0,0.04);
 }
 body.liquid-glass.dark .sidebar{box-shadow:0 10px 40px rgba(0,0,0,0.25)}
-/* Nav button — мягкая подсветка на hover */
+/* Nav button hover — мягкий */
 body.liquid-glass .nav button,
 body.liquid-glass .bottomnav button{
   transition:background .2s ease,transform .2s ease,color .2s ease;
 }
 body.liquid-glass .nav button:hover,
 body.liquid-glass .bottomnav button:hover{
-  background:rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.22);
   transform:translateX(2px);
 }
 body.liquid-glass.dark .nav button:hover,
 body.liquid-glass.dark .bottomnav button:hover{
   background:rgba(255,255,255,0.06);
 }
-/* Модалка — стеклянная с мягкой тенью */
+/* Модалка — стекло с spring-анимацией */
 body.liquid-glass .modal{
   background:var(--panel);
   backdrop-filter:blur(40px) saturate(180%);
   -webkit-backdrop-filter:blur(40px) saturate(180%);
   border:1px solid var(--line);
-  box-shadow:0 24px 60px rgba(0,0,0,0.18),0 0 0 1px rgba(255,255,255,0.05) inset;
+  box-shadow:0 24px 60px rgba(0,0,0,0.18),0 0 0 1px rgba(255,255,255,0.06) inset;
   animation:modalEnter 0.32s cubic-bezier(0.2,0.8,0.2,1);
 }
 body.liquid-glass.dark .modal{
-  box-shadow:0 24px 60px rgba(0,0,0,0.45),0 0 0 1px rgba(255,255,255,0.04) inset;
+  box-shadow:0 24px 60px rgba(0,0,0,0.45),0 0 0 1px rgba(255,255,255,0.05) inset;
 }
 @keyframes modalEnter{
   from{opacity:0;transform:scale(0.96) translateY(10px)}
   to{opacity:1;transform:scale(1) translateY(0)}
 }
-/* Overlay — мягкое затемнение с blur */
+/* Overlay — мягкое затемнение */
 body.liquid-glass .overlay{
   background:rgba(0,0,0,0.22);
   backdrop-filter:blur(10px) saturate(140%);
@@ -293,7 +293,7 @@ body.liquid-glass.dark .overlay{background:rgba(0,0,0,0.4)}
   from{opacity:0}
   to{opacity:1}
 }
-/* Карточки на доске — стекло + lift при hover */
+/* Карточки — стекло с lift на hover */
 body.liquid-glass .card{
   background:var(--panel);
   backdrop-filter:blur(18px) saturate(160%);
@@ -303,10 +303,10 @@ body.liquid-glass .card{
 }
 body.liquid-glass .card:hover{
   transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(0,0,0,0.08),0 0 0 1px rgba(255,255,255,0.08) inset;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08),0 0 0 1px rgba(255,255,255,0.1) inset;
 }
 body.liquid-glass.dark .card:hover{
-  box-shadow:0 8px 24px rgba(0,0,0,0.35),0 0 0 1px rgba(255,255,255,0.05) inset;
+  box-shadow:0 8px 24px rgba(0,0,0,0.35),0 0 0 1px rgba(255,255,255,0.06) inset;
 }
 /* Колонки канбана — стекло */
 body.liquid-glass .column{
@@ -325,19 +325,19 @@ body.liquid-glass.dark .column:has(.empty){
 }
 /* Chip-ы — стекло */
 body.liquid-glass .chip{
-  background:rgba(255,255,255,0.22);
+  background:rgba(255,255,255,0.25);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.22);
 }
 body.liquid-glass.dark .chip{
-  background:rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.07);
   border:1px solid rgba(255,255,255,0.08);
 }
-/* Stage pill — мягкое нажатие на hover */
+/* Stage pill — мягкое нажатие */
 body.liquid-glass .stage-pill{
   transition:transform .18s cubic-bezier(0.2,0.8,0.2,1),background .18s,border-color .18s,color .18s;
-  background:rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.28);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
 }
@@ -346,17 +346,17 @@ body.liquid-glass.dark .stage-pill{
 }
 body.liquid-glass .stage-pill:hover{
   transform:scale(1.04);
-  background:color-mix(in srgb,var(--pill-color) 18%,rgba(255,255,255,0.3));
+  background:color-mix(in srgb,var(--pill-color) 18%,rgba(255,255,255,0.35));
 }
 body.liquid-glass .stage-pill.active{
-  background:color-mix(in srgb,var(--pill-color) 22%,rgba(255,255,255,0.35));
+  background:color-mix(in srgb,var(--pill-color) 22%,rgba(255,255,255,0.4));
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
 }
 body.liquid-glass.dark .stage-pill.active{
-  background:color-mix(in srgb,var(--pill-color) 22%,rgba(0,0,0,0.25));
+  background:color-mix(in srgb,var(--pill-color) 22%,rgba(0,0,0,0.3));
 }
-/* Row (список в архиве, клиенты) — стекло */
+/* Row — стекло */
 body.liquid-glass .row{
   background:var(--panel);
   backdrop-filter:blur(15px) saturate(140%);
@@ -371,37 +371,35 @@ body.liquid-glass .row:hover{
 body.liquid-glass.dark .row:hover{box-shadow:0 6px 18px rgba(0,0,0,0.3)}
 /* Кнопки — мягкое стекло */
 body.liquid-glass .btn{
-  background:rgba(255,255,255,0.22);
+  background:rgba(255,255,255,0.25);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.22);
   transition:transform .15s,background .15s,border-color .15s;
 }
 body.liquid-glass .btn:hover{
   transform:scale(0.98);
-  background:rgba(255,255,255,0.35);
+  background:rgba(255,255,255,0.38);
 }
 body.liquid-glass .btn:active{transform:scale(0.96)}
 body.liquid-glass .btn.primary{
   background:linear-gradient(135deg,#f08a24,#d97a14);
-  border:1px solid rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.18);
   color:#fff;
   box-shadow:0 4px 14px rgba(240,138,36,0.32);
 }
 body.liquid-glass .btn.danger{
   background:rgba(220,38,38,0.18);
-  border:1px solid rgba(220,38,38,0.25);
+  border:1px solid rgba(220,38,38,0.28);
   color:#dc2626;
 }
-body.liquid-glass .btn.danger:hover{
-  background:rgba(220,38,38,0.28);
-}
+body.liquid-glass .btn.danger:hover{background:rgba(220,38,38,0.3)}
 body.liquid-glass.dark .btn{
-  background:rgba(255,255,255,0.07);
+  background:rgba(255,255,255,0.08);
   border:1px solid rgba(255,255,255,0.1);
 }
-body.liquid-glass.dark .btn:hover{background:rgba(255,255,255,0.13)}
-/* Toast — slide-up с bounce */
+body.liquid-glass.dark .btn:hover{background:rgba(255,255,255,0.14)}
+/* Toast — slide-up + scale */
 body.liquid-glass .toast{
   backdrop-filter:blur(20px) saturate(180%);
   -webkit-backdrop-filter:blur(20px) saturate(180%);
@@ -415,29 +413,25 @@ body.liquid-glass .toast{
 }
 /* Search input — стекло */
 body.liquid-glass .search{
-  background:rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.42);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
   border:1px solid var(--line);
 }
 body.liquid-glass.dark .search{background:rgba(255,255,255,0.06)}
-/* Top header — лёгкое стекло */
-body.liquid-glass .top h1{
-  text-shadow:0 1px 2px rgba(0,0,0,0.05);
-}
+/* Top h1 — мягкая тень */
+body.liquid-glass .top h1{text-shadow:0 1px 2px rgba(0,0,0,0.06)}
 body.liquid-glass.dark .top h1{text-shadow:0 1px 2px rgba(0,0,0,0.25)}
 /* Group wrapper — мягкое стекло с цветным акцентом */
 body.liquid-glass .group{
-  background:rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.14);
   backdrop-filter:blur(15px);
   -webkit-backdrop-filter:blur(15px);
   border-radius:14px;
   padding:10px;
   border-left:3px solid var(--group-color);
 }
-body.liquid-glass.dark .group{
-  background:rgba(255,255,255,0.03);
-}
+body.liquid-glass.dark .group{background:rgba(255,255,255,0.04)}
 /* Settings cards — стекло */
 body.liquid-glass .card.settings-card,
 body.liquid-glass .settings-grid>section{
@@ -448,18 +442,28 @@ body.liquid-glass .settings-grid>section{
 }
 /* Documents box — мягкое стекло */
 body.liquid-glass .documents-box{
-  background:rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.28);
   backdrop-filter:blur(15px);
   -webkit-backdrop-filter:blur(15px);
 }
 body.liquid-glass.dark .documents-box{background:rgba(255,255,255,0.05)}
-/* Detail-side border — мягче */
+/* Detail-side — мягче */
 body.liquid-glass .detail-side{border-left:1px solid var(--line)}
 /* Preview modal — extra blur */
 body.liquid-glass .preview-modal{
   backdrop-filter:blur(40px) saturate(180%);
   -webkit-backdrop-filter:blur(40px) saturate(180%);
 }
+/* Toggle switch для Liquid Glass в настройках */
+.glass-toggle-card{position:relative}
+.glass-toggle-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.glass-switch{position:relative;display:inline-block;width:48px;height:28px;flex:none;margin-top:4px}
+.glass-switch input{opacity:0;width:0;height:0}
+.glass-switch-track{position:absolute;cursor:pointer;inset:0;background:var(--panel2);border:1px solid var(--line);border-radius:99px;transition:background .25s}
+.glass-switch-thumb{position:absolute;height:22px;width:22px;left:3px;top:2px;background:#fff;border-radius:50%;transition:transform .25s cubic-bezier(0.2,0.8,0.2,1);box-shadow:0 2px 4px rgba(0,0,0,0.18)}
+.glass-switch input:checked+.glass-switch-track{background:linear-gradient(135deg,#f08a24,#d97a14);border-color:rgba(255,255,255,0.18)}
+.glass-switch input:checked+.glass-switch-track .glass-switch-thumb{transform:translateX(20px)}
+body.dark .glass-switch-thumb{background:#f4f5f7;box-shadow:0 2px 4px rgba(0,0,0,0.4)}
 /* Уважаем prefers-reduced-motion */
 @media(prefers-reduced-motion:reduce){
   body.liquid-glass::before,body.liquid-glass::after,
@@ -478,7 +482,7 @@ body.liquid-glass .preview-modal{
 const SUPABASE_URL='https://ncuthxvxiwghjgduchhc.supabase.co';
 const SUPABASE_KEY='sb_publishable_30uyWrQ06THITcEIVe4WTw_2BeQSGnp';
 let sb=null;
-const state={view:'today',user:null,pipelines:[],stages:[],orgs:[],cases:[],groups:[],tasks:[],comments:[],caseFields:[],caseFieldValues:[],caseFiles:[],search:'',theme:'system',uiMode:'compact',archiveFilter:'all',legalPipelineView:null,taskDate:null,calendarMonth:null,groupSelectMode:false,groupSelected:new Set(),groupTargetGroupId:null};
+const state={view:'today',user:null,pipelines:[],stages:[],orgs:[],cases:[],groups:[],tasks:[],comments:[],caseFields:[],caseFieldValues:[],caseFiles:[],search:'',theme:'system',uiMode:'compact',glass:false,archiveFilter:'all',legalPipelineView:null,taskDate:null,calendarMonth:null,groupSelectMode:false,groupSelected:new Set(),groupTargetGroupId:null};
 const SOURCE_LABEL={mailing:'с рассылок',dmitry_base:'база клиентов Дмитрия',not_set:'не установлено'};
 const GROUP_COLORS=['#5b8def','#e07a5f','#3aa981','#9b6bd3','#d49a3a','#4f9da6','#d45d9d','#6d8b74','#8b6f47','#6573c3','#b05a75','#4b7f8c'];
 let groupColorSaving=false;
@@ -495,7 +499,7 @@ function todayKey(){return localDateKey()}
 function pipelineFor(type){return state.pipelines.filter(p=>p.entity_type===type&&p.active)}
 function stagesFor(pid){return state.stages.filter(s=>s.pipeline_id===pid&&s.active).sort((a,b)=>a.sort_order-b.sort_order)}
 function ensureMember(){return sb.rpc('is_crm_member').then(({data,error})=>{if(error)throw error;return data===true})}
-function applyTheme(){document.body.classList.remove('dark','system','light','liquid-glass');if(state.theme==='liquid'){document.body.classList.add('liquid-glass');const prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;document.body.classList.add(prefersDark?'dark':'light')}else if(state.theme==='dark')document.body.classList.add('dark');else if(state.theme==='light')document.body.classList.add('light');else if(state.theme==='system')document.body.classList.add('system');localStorage.setItem('pravodom_theme',state.theme);if(window.matchMedia){const mq=window.matchMedia('(prefers-color-scheme: dark)');if(mq&&mq.addEventListener&&!mq._lgbound){mq._lgbound=true;mq.addEventListener('change',()=>{if(state.theme==='liquid'||state.theme==='system')applyTheme()})}}}
+function applyTheme(){document.body.classList.remove('dark','system','light');if(state.theme==='dark')document.body.classList.add('dark');else if(state.theme==='light')document.body.classList.add('light');else if(state.theme==='system')document.body.classList.add('system');localStorage.setItem('pravodom_theme',state.theme);if(window.matchMedia){const mq=window.matchMedia('(prefers-color-scheme: dark)');if(mq&&!mq._pravbound){mq._pravbound=true;mq.addEventListener('change',()=>{if(state.theme==='system')applyTheme()})}}}function applyGlass(){if(state.glass){document.body.classList.add('liquid-glass')}else{document.body.classList.remove('liquid-glass')}localStorage.setItem('pravodom_glass',state.glass?'1':'0')}
 function applyUiMode(){document.body.classList.remove('classic-ui','compact-ui','simple-ui','full-ui');document.body.classList.add('compact-ui')}
 function pendingTasks(){return state.tasks.filter(t=>!t.completed)}
 function todayPending(){return pendingTasks().filter(t=>t.due_date===todayKey())}
@@ -523,14 +527,14 @@ function groupColor(g){return g?.color||GROUP_COLORS[Math.abs(hashCode(g?.id||''
 function hashCode(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h)+s.charCodeAt(i)|0;return h}
 function groupedCards(cs){const groups={},ungrouped=[];cs.forEach(c=>c.group_id?(groups[c.group_id]??=[]).push(c):ungrouped.push(c));let html='';Object.entries(groups).sort((a,b)=>String(a[1][0].created_at).localeCompare(String(b[1][0].created_at))).forEach(([gid,items])=>{const g=state.groups.find(x=>x.id===gid);html+=`<div class="group" style="--group-color:${groupColor(g)}"><div class="group-head"><div class="group-label"><span class="group-dot"></span><strong>${esc(g?.name||'Группа')}</strong></div><button class="btn small" onclick="event.stopPropagation();openGroup('${gid}')">Группа</button></div><div class="group-grid">${items.map(caseCard).join('')}</div></div>`});html+=ungrouped.map(caseCard).join('');return html||'<div class="empty">Пусто</div>'}
 function matchCase(c){const q=state.search.toLowerCase();return !q||[c.title,c.debtor_name,c.debtor_identifier].filter(Boolean).some(x=>String(x).toLowerCase().includes(q))}
-function caseCard(c){const selected=state.groupSelected.has(c.id);const selectable=state.groupSelectMode&&!c.group_id;const g=c.group_id?state.groups.find(x=>x.id===c.group_id):null;const gc=g?groupColor(g):null;return `<article class="card ${selectable?'selectable':''} ${selected?'selected-for-group':''} ${g?'in-group':''}" style="${g?`--group-color:${gc}`:''}" onclick="${selectable?`toggleGroupCase('${c.id}')`:`openCase('${c.id}')`}">${selectable?`<input class="select-check" type="checkbox" ${selected?'checked':''} onclick="event.stopPropagation();toggleGroupCase('${c.id}')">`:''}<div class="card-title">${esc(c.title)}</div>${c.debtor_name?`<div class="card-sub">${esc(c.debtor_name)}</div>`:''}<div class="meta"><span class="chip">${esc(SOURCE_LABEL[c.source||'not_set'])}</span>${c.organization_id?`<span class="chip">${esc(state.orgs.find(o=>o.id===c.organization_id)?.name||'организация')}</span>`:''}${g?`<span class="chip group-chip" style="background:color-mix(in srgb,${gc} 16%,transparent);color:${gc};border-color:color-mix(in srgb,${gc} 30%,transparent)">${esc(g.name)}</span>`:''}</div>${!selectable?`<button class="btn card-action" onclick="event.stopPropagation();openCase('${c.id}')">Открыть</button>`:''}</article>`}
+function caseCard(c){const selected=state.groupSelected.has(c.id);const selectable=state.groupSelectMode&&!c.group_id;return `<article class="card ${selectable?'selectable':''} ${selected?'selected-for-group':''}" onclick="${selectable?`toggleGroupCase('${c.id}')`:`openCase('${c.id}')`}">${selectable?`<input class="select-check" type="checkbox" ${selected?'checked':''} onclick="event.stopPropagation();toggleGroupCase('${c.id}')">`:''}<div class="card-title">${esc(c.title)}</div>${c.debtor_name?`<div class="card-sub">${esc(c.debtor_name)}</div>`:''}<div class="meta"><span class="chip">${esc(SOURCE_LABEL[c.source||'not_set'])}</span>${c.organization_id?`<span class="chip">${esc(state.orgs.find(o=>o.id===c.organization_id)?.name||'организация')}</span>`:''}</div>${!selectable?`<button class="btn card-action" onclick="event.stopPropagation();openCase('${c.id}')">Открыть</button>`:''}</article>`}
 function renderClients(main){const archivedOrgs=state.orgs.filter(o=>o.deleted_at);const archivedCases=state.cases.filter(c=>c.deleted_at);const q=state.search.toLowerCase();const matchOrgA=o=>!q||[o.name,o.contact_name,o.phone,o.email,o.inn].filter(Boolean).some(x=>String(x).toLowerCase().includes(q));const matchCaseA=c=>!q||[c.title,c.debtor_name,c.debtor_identifier].filter(Boolean).some(x=>String(x).toLowerCase().includes(q));const orgsVisible=archivedOrgs.filter(matchOrgA);const casesVisible=archivedCases.filter(matchCaseA);const showAll=state.archiveFilter==='all';const showOrgs=state.archiveFilter==='orgs'||showAll;const showCases=state.archiveFilter==='cases'||showAll;const total=archivedOrgs.length+archivedCases.length;const tabs=`<div class="archive-tabs">${['all','orgs','cases'].map(t=>{const labels={all:'Все',orgs:'Клиенты',cases:'Дела'};const counts={all:total,orgs:archivedOrgs.length,cases:archivedCases.length};return `<button class="archive-tab ${state.archiveFilter===t?'active':''}" onclick="setArchiveFilter('${t}')">${labels[t]} <span class="archive-tab-count">${counts[t]}</span></button>`}).join('')}</div>`;const emptyState=(!archivedOrgs.length&&!archivedCases.length)?'<div class="card"><div class="card-title">Архив пуст</div><div class="card-sub">Удалённые карточки и дела будут появляться здесь. Из архива можно восстановить или удалить окончательно.</div></div>':'';const noMatch=(total>0&&!orgsVisible.length&&!casesVisible.length)?'<div class="empty">Ничего не найдено по запросу.</div>':'';const orgsSection=(showOrgs&&orgsVisible.length)?`<div class="archive-section"><h3>Клиенты (${orgsVisible.length})</h3>${orgsVisible.map(o=>`<div class="archive-row"><div class="archive-info"><strong>${esc(o.name)}</strong><div class="card-sub">${o.contact_name?esc(o.contact_name)+' · ':''}архив ${fmtDate(o.deleted_at?.slice(0,10))}</div></div><div class="archive-actions"><button class="btn small" onclick="restoreOrg('${o.id}')">Восстановить</button><button class="btn small danger" onclick="purgeOrg('${o.id}')">Удалить навсегда</button></div></div>`).join('')}</div>`:'';const casesSection=(showCases&&casesVisible.length)?`<div class="archive-section"><h3>Дела (${casesVisible.length})</h3>${casesVisible.map(c=>`<div class="archive-row"><div class="archive-info"><strong>${esc(c.title)}</strong><div class="card-sub">${c.debtor_name?esc(c.debtor_name)+' · ':''}архив ${fmtDate(c.deleted_at?.slice(0,10))}</div></div><div class="archive-actions"><button class="btn small" onclick="restoreCase('${c.id}')">Восстановить</button><button class="btn small danger" onclick="purgeCase('${c.id}')">Удалить навсегда</button></div></div>`).join('')}</div>`:'';main.innerHTML=header('Архив')+`<div class="toolbar">${searchBar()}</div>${tabs}${emptyState}${orgsSection}${casesSection}${noMatch}`}function setArchiveFilter(f){state.archiveFilter=f;render()}
 function taskListHtml(tasks){return `<div class="task-list">${tasks.sort((a,b)=>(a.due_time||'99:99').localeCompare(b.due_time||'99:99')).map(taskHtml).join('')}</div>`}
 function taskHtml(t){const org=t.organization_id?state.orgs.find(o=>o.id===t.organization_id):null,cas=t.case_id?state.cases.find(c=>c.id===t.case_id):null;const overdue=!t.completed&&t.due_date<todayKey();return `<div class="task ${t.completed?'done':''}"><input class="task-check" type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div class="task-main"><div class="task-title">${esc(t.title)}</div><div class="task-meta ${overdue?'task-overdue':''}">${t.due_date?fmtDate(t.due_date):'Без даты'}${t.due_time?' · '+esc(t.due_time.slice(0,5)):''}${org?' · '+esc(org.name):''}${cas?' · '+esc(cas.title):''}</div>${t.notes?`<div class="card-sub">${esc(t.notes)}</div>`:''}</div><div class="task-actions"><button class="btn small" onclick="editTask('${t.id}')">Изменить</button></div></div>`}
 function renderTasks(main){const now=state.calendarMonth||new Date(todayKey()+'T00:00:00'),y=now.getFullYear(),m=now.getMonth();if(!state.taskDate)state.taskDate=todayKey();const days=new Date(y,m+1,0).getDate(),first=new Date(y,m,1).getDay(),offset=(first+6)%7;let cells='';for(let i=0;i<offset;i++)cells+=`<div></div>`;for(let d=1;d<=days;d++){const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,count=state.tasks.filter(t=>t.due_date===k).length;cells+=`<button class="day ${k===state.taskDate?'selected':''} ${k===todayKey()?'today':''}" onclick="selectTaskDate('${k}')"><div class="day-num">${d}</div>${count?`<div class="day-count">${count} ${count===1?'задача':count<5?'задачи':'задач'}</div>`:''}</button>`}const selectedTasks=state.tasks.filter(t=>t.due_date===state.taskDate);main.innerHTML=header('Задачи',`<button class="btn primary" onclick="newTask('${state.taskDate}')">+ Задача</button>`)+`<div class="calendar"><div class="calendar-head"><button class="btn small" onclick="shiftMonth(-1)">‹</button><strong>${now.toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</strong><button class="btn small" onclick="shiftMonth(1)">›</button></div><div class="calendar-grid">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div></div><div class="section"><h3>${fmtDate(state.taskDate)}</h3>${selectedTasks.length?taskListHtml(selectedTasks):'<div class="empty">На эту дату задач нет.</div>'}</div>`}
 function selectTaskDate(k){state.taskDate=k;state.calendarMonth=parseDate(k);render()}
 function shiftMonth(delta){const d=state.calendarMonth||parseDate(state.taskDate||todayKey());state.calendarMonth=new Date(d.getFullYear(),d.getMonth()+delta,1);render()}
-function renderSettings(main){main.innerHTML=header('Настройки')+`<div class="settings-grid"><section class="card settings-card"><div class="card-title">Тема CRM</div><div class="card-sub">Выберите внешний вид Праводом.рф.</div><select style="max-width:280px;margin-top:12px" onchange="state.theme=this.value;applyTheme();render()"><option value="system" ${state.theme==='system'?'selected':''}>⚙️ Тема системы</option><option value="light" ${state.theme==='light'?'selected':''}>☀️ Дневная</option><option value="dark" ${state.theme==='dark'?'selected':''}>🌙 Ночная</option><option value="liquid" ${state.theme==='liquid'?'selected':''}>✨ Жидкое стекло (iOS)</option></select></section><section class="card settings-card"><div class="card-title">Шаблоны</div><div class="card-sub">Перенос данных из одной или нескольких карточек в шаблонные документы.</div><button class="btn" style="margin-top:10px" onclick="toast('Функция «Создать шаблон» — в разработке')">Создать шаблон</button></section><section class="card settings-card"><div class="card-title">Версия</div><div class="card-sub">Праводом.рф · CRM v3.6</div></section></div>`}
+function renderSettings(main){main.innerHTML=header('Настройки')+`<div class="settings-grid"><section class="card settings-card glass-toggle-card"><div class="glass-toggle-row"><div><div class="card-title">Жидкое стекло</div><div class="card-sub">Полупрозрачные панели с размытием фона, плавные анимации. Применяется поверх выбранной темы (светлая или тёмная).</div></div><label class="glass-switch"><input type="checkbox" ${state.glass?'checked':''} onchange="state.glass=this.checked;applyGlass();render()"><span class="glass-switch-track"><span class="glass-switch-thumb"></span></span></label></div></section><section class="card settings-card"><div class="card-title">Тема CRM</div><div class="card-sub">Выберите внешний вид Праводом.рф.</div><select style="max-width:280px;margin-top:12px" onchange="state.theme=this.value;applyTheme();render()"><option value="system" ${state.theme==='system'?'selected':''}>⚙️ Тема системы</option><option value="light" ${state.theme==='light'?'selected':''}>☀️ Дневная</option><option value="dark" ${state.theme==='dark'?'selected':''}>🌙 Ночная</option></select></section><section class="card settings-card"><div class="card-title">Шаблоны</div><div class="card-sub">Перенос данных из одной или нескольких карточек в шаблонные документы.</div><button class="btn" style="margin-top:10px" onclick="toast('Функция «Создать шаблон» — в разработке')">Создать шаблон</button></section><section class="card settings-card"><div class="card-title">Версия</div><div class="card-sub">Праводом.рф · CRM v3.6</div></section></div>`}
 async function reload(){try{const [{data:p,error:pe},{data:s,error:se},{data:o,error:oe},{data:c,error:ce},{data:g,error:ge},{data:t,error:te},{data:a,error:ae},{data:cf,error:cfe},{data:cfv,error:cfve}]=await Promise.all([sb.from('crm_pipelines').select('*').eq('active',true).order('sort_order'),sb.from('crm_pipeline_stages').select('*').eq('active',true).order('sort_order'),sb.from('crm_organizations').select('*').order('created_at',{ascending:false}),sb.from('crm_cases').select('*').order('created_at',{ascending:false}),sb.from('crm_case_groups').select('*').order('created_at',{ascending:false}),sb.from('crm_tasks').select('*').order('due_date').order('due_time'),sb.from('crm_activities').select('*').eq('kind','comment').order('created_at',{ascending:false}),sb.from('crm_case_fields').select('*').eq('active',true).order('sort_order'),sb.from('crm_case_field_values').select('*')]);for(const e of [pe,se,oe,ce,ge,te,ae])if(e)throw e;state.pipelines=p||[];state.stages=s||[];state.orgs=o||[];state.cases=c||[];state.groups=g||[];state.tasks=t||[];state.comments=a||[];state.caseFields=cfe?[]:(cf||[]);state.caseFieldValues=cfve?[]:(cfv||[]);const {data:files,error:fe}=await sb.from('crm_case_files').select('*').order('created_at',{ascending:false});if(!fe)state.caseFiles=files||[];else console.error('crm_case_files:',fe);await assignMissingGroupColors();shell()}catch(e){console.error(e);showFatal(e)}}
 async function assignMissingGroupColors(){if(groupColorSaving)return;const missing=state.groups.filter(g=>!g.color);if(!missing.length)return;groupColorSaving=true;try{const used=new Set(state.groups.map(g=>g.color).filter(Boolean));for(const g of missing){const color=GROUP_COLORS.find(c=>!used.has(c));if(!color)break;const {error}=await sb.from('crm_case_groups').update({color}).eq('id',g.id);if(!error){g.color=color;used.add(color)}}}finally{groupColorSaving=false}}
 function showFatal(e){document.getElementById('root').innerHTML=`<div class="fatal"><div class="card"><h2>Праводом.рф не удалось загрузить</h2><div class="card-sub" style="margin-top:8px">CRM остановилась при загрузке данных. Ничего не отключаем и не меняем автоматически.</div><div class="section"><strong>Техническая ошибка</strong><pre style="white-space:pre-wrap;color:var(--danger)">${esc(e?.message||e)}</pre></div><button class="btn primary" onclick="location.reload()">Обновить</button></div></div>`}
@@ -570,8 +574,8 @@ async function saveCaseCustomFields(caseId,pipelineId,form){const fields=state.c
 function commentsHtml(type,id){const rows=(state.comments||[]).filter(x=>type==='org'?x.organization_id===id:x.case_id===id);return `<div class="comment-compose-wrap"><textarea id="newComment" class="comment-compose" placeholder="Написать комментарий..."></textarea><button class="btn comment-save" onclick="addComment('${type}','${id}')">Сохранить</button></div><div class="comment-list">${rows.map(x=>`<div class="comment-item"><div class="comment-text">${esc(x.text)}</div><div class="comment-foot"><span>${fmtDateTime(x.created_at)}</span><button class="comment-delete" onclick="deleteComment('${x.id}')">× удалить</button></div></div>`).join('')}</div>`}
 async function addComment(type,id){const el=document.getElementById('newComment'),text=el?.value.trim();if(!text)return;const payload={text,kind:'comment',created_by:state.user.id};if(type==='org')payload.organization_id=id;else payload.case_id=id;const {error}=await sb.from('crm_activities').insert(payload);if(error)toast(error.message);else{await reload();type==='org'?openOrg(id):openCase(id);toast('Комментарий сохранён')}}
 async function deleteComment(id){if(!confirm('Удалить комментарий?'))return;const {error}=await sb.from('crm_activities').delete().eq('id',id);if(error)toast(error.message);else{await reload();toast('Комментарий удалён')}}
-async function deleteOrg(id){const o=state.orgs.find(x=>x.id===id);if(!o)return;modal(`<div class="modal-head"><div><h2>Удалить «${esc(o.name)}»</h2><div class="card-sub">Выберите, что сделать с карточкой клиента.</div></div><button class="close" onclick="closeModal()">×</button></div><div class="section" style="margin-top:16px"><div class="card-sub" style="margin-bottom:12px">Карточка содержит ${state.cases.filter(c=>c.organization_id===id&&!c.deleted_at).length} активных дел и связанные задачи/комментарии.</div><div class="actions" style="display:grid;gap:8px"><button class="btn" style="text-align:left;padding:12px 14px" onclick="archiveOrg('${id}')"><strong>↓ Убрать в архив</strong><div class="card-sub" style="margin-top:3px">Скрыть из воронки. Видна в разделе «Архив». Можно восстановить.</div></button><button class="btn danger" style="text-align:left;padding:12px 14px" onclick="purgeOrg('${id}')"><strong>× Удалить навсегда</strong><div class="card-sub" style="margin-top:3px">Безвозвратно. Файлы на Яндекс Диске будут удалены, дела потеряют привязку к организации.</div></button><button class="btn" onclick="closeModal()">Отмена</button></div></div>`)}async function archiveOrg(id){const o=state.orgs.find(x=>x.id===id);if(!o)return;try{const {error}=await sb.from('crm_organizations').update({deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;closeModal();await reload();toast('Карточка в архиве')}catch(e){toast(e.message||'Не удалось архивировать')}}async function purgeOrg(id){const o=state.orgs.find(x=>x.id===id);if(!o)return;if(!confirm(`Удалить навсегда «${o.name}»? Это действие необратимо. Файлы и история будут потеряны.`))return;try{const orgCases=state.cases.filter(c=>c.organization_id===id);for(const oc of orgCases){const files=state.caseFiles.filter(f=>f.case_id===oc.id);for(const f of files){try{await yandexAction({action:'delete',path:f.yandex_path})}catch{}}const {error:ef}=await sb.from('crm_case_files').delete().eq('case_id',oc.id);if(ef)console.warn('case_files cleanup:',ef.message);const {error:efv}=await sb.from('crm_case_field_values').delete().eq('case_id',oc.id);if(efv)console.warn('field_values cleanup:',efv.message);const {error:ea}=await sb.from('crm_activities').delete().eq('case_id',oc.id);if(ea)console.warn('activities cleanup:',ea.message);const {error:et}=await sb.from('crm_tasks').update({case_id:null}).eq('case_id',oc.id);if(et)console.warn('tasks cleanup:',et.message)}const {error:ec}=await sb.from('crm_cases').delete().eq('organization_id',id);if(ec)console.warn('cases cleanup:',ec.message);const {error:et2}=await sb.from('crm_tasks').update({organization_id:null}).eq('organization_id',id);if(et2)console.warn('org tasks cleanup:',et2.message);const {error:ea2}=await sb.from('crm_activities').delete().eq('organization_id',id);if(ea2)console.warn('org activities cleanup:',ea2.message);const {error}=await sb.from('crm_organizations').delete().eq('id',id);if(error)throw error;closeModal();await reload();toast('Карточка удалена навсегда')}catch(e){console.error('purgeOrg error:',e);toast(e.message||'Не удалось удалить навсегда')}}async function restoreOrg(id){try{const {error}=await sb.from('crm_organizations').update({deleted_at:null,updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await reload();toast('Карточка восстановлена')}catch(e){toast(e.message||'Не удалось восстановить')}}
-async function deleteCase(id){const c=state.cases.find(x=>x.id===id);if(!c)return;modal(`<div class="modal-head"><div><h2>Удалить «${esc(c.title)}»</h2><div class="card-sub">Выберите, что сделать с делом.</div></div><button class="close" onclick="closeModal()">×</button></div><div class="section" style="margin-top:16px"><div class="card-sub" style="margin-bottom:12px">Дело содержит ${state.caseFiles.filter(f=>f.case_id===id).length} файлов на Яндекс Диске и связанные задачи/комментарии.</div><div class="actions" style="display:grid;gap:8px"><button class="btn" style="text-align:left;padding:12px 14px" onclick="archiveCase('${id}')"><strong>↓ Убрать в архив</strong><div class="card-sub" style="margin-top:3px">Скрыть из воронки. Видно в разделе «Архив». Можно восстановить.</div></button><button class="btn danger" style="text-align:left;padding:12px 14px" onclick="purgeCase('${id}')"><strong>× Удалить навсегда</strong><div class="card-sub" style="margin-top:3px">Файлы на Яндекс Диске будут удалены, история потеряна. Необратимо.</div></button><button class="btn" onclick="closeModal()">Отмена</button></div></div>`)}async function archiveCase(id){const c=state.cases.find(x=>x.id===id);if(!c)return;try{const {error}=await sb.from('crm_cases').update({deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;closeModal();await reload();toast('Дело в архиве')}catch(e){toast(e.message||'Не удалось архивировать')}}async function purgeCase(id){const c=state.cases.find(x=>x.id===id);if(!c)return;if(!confirm(`Удалить навсегда дело «${c.title}»? Файлы с Яндекс Диска будут удалены. Действие необратимо.`))return;try{const files=state.caseFiles.filter(f=>f.case_id===id);for(const f of files){try{await yandexAction({action:'delete',path:f.yandex_path})}catch{}}const {error:ef}=await sb.from('crm_case_files').delete().eq('case_id',id);if(ef)console.warn('case_files cleanup:',ef.message);const {error:efv}=await sb.from('crm_case_field_values').delete().eq('case_id',id);if(efv)console.warn('field_values cleanup:',efv.message);const {error:ea}=await sb.from('crm_activities').delete().eq('case_id',id);if(ea)console.warn('activities cleanup:',ea.message);const {error:et}=await sb.from('crm_tasks').update({case_id:null}).eq('case_id',id);if(et)console.warn('tasks cleanup:',et.message);const {error}=await sb.from('crm_cases').delete().eq('id',id);if(error)throw error;closeModal();await reload();toast('Дело удалено навсегда')}catch(e){console.error('purgeCase error:',e);toast(e.message||'Не удалось удалить навсегда')}}async function restoreCase(id){try{const {error}=await sb.from('crm_cases').update({deleted_at:null,updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await reload();toast('Дело восстановлено')}catch(e){toast(e.message||'Не удалось восстановить')}}
+async function deleteOrg(id){const o=state.orgs.find(x=>x.id===id);if(!o)return;modal(`<div class="modal-head"><div><h2>Удалить «${esc(o.name)}»</h2><div class="card-sub">Выберите, что сделать с карточкой клиента.</div></div><button class="close" onclick="closeModal()">×</button></div><div class="section" style="margin-top:16px"><div class="card-sub" style="margin-bottom:12px">Карточка содержит ${state.cases.filter(c=>c.organization_id===id&&!c.deleted_at).length} активных дел и связанные задачи/комментарии.</div><div class="actions" style="display:grid;gap:8px"><button class="btn" style="text-align:left;padding:12px 14px" onclick="archiveOrg('${id}')"><strong>↓ Убрать в архив</strong><div class="card-sub" style="margin-top:3px">Скрыть из воронки. Видна в разделе «Архив». Можно восстановить.</div></button><button class="btn danger" style="text-align:left;padding:12px 14px" onclick="purgeOrg('${id}')"><strong>× Удалить навсегда</strong><div class="card-sub" style="margin-top:3px">Безвозвратно. Файлы на Яндекс Диске будут удалены, дела потеряют привязку к организации.</div></button><button class="btn" onclick="closeModal()">Отмена</button></div></div>`)}async function archiveOrg(id){const o=state.orgs.find(x=>x.id===id);if(!o)return;try{const {error}=await sb.from('crm_organizations').update({deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;closeModal();await reload();toast('Карточка в архиве')}catch(e){toast(e.message||'Не удалось архивировать')}}async function purgeOrg(id){const o=state.orgs.find(x=>x.id===id);if(!o)return;if(!confirm(`Удалить навсегда «${o.name}»? Это действие необратимо. Файлы и история будут потеряны.`))return;try{const orgCases=state.cases.filter(c=>c.organization_id===id);for(const oc of orgCases){const files=state.caseFiles.filter(f=>f.case_id===oc.id);for(const f of files){try{await yandexAction({action:'delete',path:f.yandex_path})}catch{}}const {error:ef}=await sb.from('crm_case_files').delete().eq('case_id',oc.id);if(ef)console.warn('case_files cleanup:',ef.message);const {error:efv}=await sb.from('crm_case_field_values').delete().eq('case_id',oc.id);if(efv)console.warn('field_values cleanup:',efv.message);const {error:ea}=await sb.from('crm_activities').delete().eq('case_id',oc.id);if(ea)console.warn('activities cleanup:',ea.message);const {error:et}=await sb.from('crm_tasks').update({case_id:null}).eq('case_id',oc.id);if(et)console.warn('tasks cleanup:',et.message)}const {error:ec}=await sb.from('crm_cases').delete().eq('organization_id',id);if(ec)console.warn('cases cleanup:',ec.message);const {error:et2}=await sb.from('crm_tasks').update({organization_id:null}).eq('organization_id',id);if(et2)console.warn('org tasks cleanup:',et2.message);const {error:ea2}=await sb.from('crm_activities').delete().eq('organization_id',id);if(ea2)console.warn('org activities cleanup:',ea2.message);const {data:deletedRows,error}=await sb.from('crm_organizations').delete().eq('id',id).select('*');if(error){console.error('org DELETE error:',error);throw new Error('org: '+error.message)}const deletedCount=deletedRows?deletedRows.length:0;console.log('purgeOrg: deleted rows =',deletedCount);if(deletedCount===0){throw new Error('Supabase вернул успех, но запись не удалена. Скорее всего включён RLS на таблице crm_organizations без policy для DELETE. Откройте Supabase Dashboard → Authentication → Policies → crm_organizations → добавьте policy для DELETE, либо отключите RLS на этой таблице.')}closeModal();await reload();toast('Карточка удалена навсегда')}catch(e){console.error('purgeOrg FULL error:',e);toast('Ошибка: '+(e.message||'неизвестно'))}}async function restoreOrg(id){try{const {error}=await sb.from('crm_organizations').update({deleted_at:null,updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await reload();toast('Карточка восстановлена')}catch(e){toast(e.message||'Не удалось восстановить')}}
+async function deleteCase(id){const c=state.cases.find(x=>x.id===id);if(!c)return;modal(`<div class="modal-head"><div><h2>Удалить «${esc(c.title)}»</h2><div class="card-sub">Выберите, что сделать с делом.</div></div><button class="close" onclick="closeModal()">×</button></div><div class="section" style="margin-top:16px"><div class="card-sub" style="margin-bottom:12px">Дело содержит ${state.caseFiles.filter(f=>f.case_id===id).length} файлов на Яндекс Диске и связанные задачи/комментарии.</div><div class="actions" style="display:grid;gap:8px"><button class="btn" style="text-align:left;padding:12px 14px" onclick="archiveCase('${id}')"><strong>↓ Убрать в архив</strong><div class="card-sub" style="margin-top:3px">Скрыть из воронки. Видно в разделе «Архив». Можно восстановить.</div></button><button class="btn danger" style="text-align:left;padding:12px 14px" onclick="purgeCase('${id}')"><strong>× Удалить навсегда</strong><div class="card-sub" style="margin-top:3px">Файлы на Яндекс Диске будут удалены, история потеряна. Необратимо.</div></button><button class="btn" onclick="closeModal()">Отмена</button></div></div>`)}async function archiveCase(id){const c=state.cases.find(x=>x.id===id);if(!c)return;try{const {error}=await sb.from('crm_cases').update({deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;closeModal();await reload();toast('Дело в архиве')}catch(e){toast(e.message||'Не удалось архивировать')}}async function purgeCase(id){const c=state.cases.find(x=>x.id===id);if(!c)return;if(!confirm(`Удалить навсегда дело «${c.title}»? Файлы с Яндекс Диска будут удалены. Действие необратимо.`))return;try{const files=state.caseFiles.filter(f=>f.case_id===id);for(const f of files){try{await yandexAction({action:'delete',path:f.yandex_path})}catch(err){console.warn('yandex delete failed:',err)}}const {error:ef}=await sb.from('crm_case_files').delete().eq('case_id',id);if(ef){console.error('case_files DELETE error:',ef);throw new Error('case_files: '+ef.message)}const {error:efv}=await sb.from('crm_case_field_values').delete().eq('case_id',id);if(efv){console.error('field_values DELETE error:',efv);throw new Error('field_values: '+efv.message)}const {error:ea}=await sb.from('crm_activities').delete().eq('case_id',id);if(ea){console.error('activities DELETE error:',ea);throw new Error('activities: '+ea.message)}const {error:et}=await sb.from('crm_tasks').update({case_id:null}).eq('case_id',id);if(et){console.error('tasks UPDATE error:',et);throw new Error('tasks: '+et.message)}const {error:eg}=await sb.from('crm_cases').update({group_id:null}).eq('id',id);if(eg){console.error('group_id null error:',eg);throw new Error('group_id: '+eg.message)}const {data:deletedRows,count,error}=await sb.from('crm_cases').delete().eq('id',id).select('*');if(error){console.error('case DELETE error:',error);throw new Error('case: '+error.message)}const deletedCount=deletedRows?deletedRows.length:0;console.log('purgeCase: deleted rows =',deletedCount);if(deletedCount===0){throw new Error('Supabase вернул успех, но запись не удалена. Скорее всего включён RLS (Row Level Security) на таблице crm_cases без policy для DELETE. Откройте Supabase Dashboard → Authentication → Policies → crm_cases → добавьте policy для DELETE, либо отключите RLS на этой таблице.')}closeModal();await reload();toast('Дело удалено навсегда')}catch(e){console.error('purgeCase FULL error:',e);toast('Ошибка: '+(e.message||'неизвестно'))}}async function restoreCase(id){try{const {error}=await sb.from('crm_cases').update({deleted_at:null,updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await reload();toast('Дело восстановлено')}catch(e){toast(e.message||'Не удалось восстановить')}}
 function orgFieldView(label,value){return `<div class="field"><div class="edit-field-label">${label}</div><div class="card-view-value ${value?'':'muted'}">${value?esc(value):'Не указано'}</div></div>`}
 function caseFieldView(label,value){return `<div class="field"><div class="edit-field-label">${label}</div><div class="card-view-value ${value?'':'muted'}">${value?esc(value):'Не указано'}</div></div>`}
 function openOrg(id){const o=state.orgs.find(x=>x.id===id);if(!o)return;const stages=stagesFor(o.sales_pipeline_id),orgCases=state.cases.filter(c=>c.organization_id===id&&!c.deleted_at);const stageBar=stages.length?`<div class="case-stage-bar"><div class="stage-switcher">${stages.map((s,i)=>{const color=STAGE_COLORS[i%STAGE_COLORS.length];const active=s.id===o.sales_stage_id;return `<button class="stage-pill${active?' active':''}" style="--pill-color:${color}" onclick="quickChangeOrgStage('${id}','${s.id}')" title="Сменить стадию на «${esc(s.name)}»">${esc(s.name)}</button>`}).join('')}</div></div>`:'';const headerActions=`<div class="case-head-actions"><button class="btn small" onclick="orgBulkCreateCases('${id}')" title="Создать несколько дел">+ Создать дела</button><button class="btn small" onclick="newTask('${todayKey()}','${id}')" title="Поставить задачу">+ Задача</button><button class="btn small" onclick="editOrg('${id}')" title="Редактировать">Редактировать</button><button class="close" onclick="closeModal()">×</button></div>`;const deleteRow=`<div class="delete-row"><button class="btn danger small" onclick="deleteOrg('${id}')">Удалить карточку</button></div>`;modal(`<div class="modal-head case-head"><div class="case-head-info"><h2>${esc(o.name)}</h2><div class="card-sub">${o.contact_name?esc(o.contact_name):'Контакт не указан'}</div></div>${headerActions}</div>${stageBar}<div class="detail-layout modal-card-layout" id="caseLayout" style="margin-top:6px"><div class="detail-main"><div class="section" style="margin-top:0;padding-top:0;border-top:0"><h3>Источник</h3>${sourceReadOnly(o.source||'not_set')}</div><div class="section"><h3>Стоимость услуг</h3><div class="card-view-value ${o.service_cost_unknown!==false?'muted':''}">${o.service_cost_unknown!==false?'?':fmtMoney(o.service_cost)}</div></div>${o.phone||o.email||o.inn||o.telegram||o.website?`<div class="section"><h3>Контакты</h3><div class="list">${o.phone?orgFieldView('Телефон',o.phone):''}${o.email?orgFieldView('Email',o.email):''}${o.telegram?orgFieldView('Telegram',o.telegram):''}${o.website?orgFieldView('Сайт',o.website):''}${o.inn?orgFieldView('ИНН',o.inn):''}</div></div>`:''}${o.position?`<div class="section">${orgFieldView('Должность',o.position)}</div>`:''}${o.max_contact?`<div class="section">${orgFieldView('Дополнительный контакт',o.max_contact)}</div>`:''}${orgCases.length?`<div class="section"><h3>Дела (${orgCases.length})</h3><div class="multi">${orgCases.map(c=>`<button class="btn small" onclick="openCase('${c.id}')">${esc(c.title)}</button>`).join('')}</div></div>`:''}${o.notes?`<div class="section">${orgFieldView('Заметка',o.notes)}</div>`:''}${deleteRow}</div><div class="detail-resizer" id="caseResizer" title="Потяните, чтобы изменить ширину"></div><div class="detail-side"><h3 style="margin-top:0">Комментарии</h3>${commentsHtml('org',id)}</div></div>`,'case-modal');initCaseResizer()}async function quickChangeOrgStage(orgId,stageId){try{const {error}=await sb.from('crm_organizations').update({sales_stage_id:stageId,updated_at:new Date().toISOString()}).eq('id',orgId);if(error)throw error;const o=state.orgs.find(x=>x.id===orgId);if(o){o.sales_stage_id=stageId;o.updated_at=new Date().toISOString()}openOrg(orgId);render();toast('Стадия изменена')}catch(e){console.error(e);toast(e.message||'Не удалось сменить стадию')}}async function orgBulkCreateCases(orgId){const o=state.orgs.find(x=>x.id===orgId);if(!o)return;const casePipelines=state.pipelines.filter(p=>p.entity_type==='case');const p=casePipelines[0];const stages=stagesFor(p?.id);modal(`<div class="modal-head"><div><h2>Создать дела для «${esc(o.name)}»</h2><div class="card-sub">Каждая строка — отдельное дело. Все будут привязаны к этому клиенту.</div></div><button class="close" onclick="closeModal()">×</button></div><form id="orgBulkForm" style="margin-top:16px;display:grid;gap:10px">${p?`<div class="field"><label>Юридическая воронка</label><select name="pipeline_id">${casePipelines.map(pp=>`<option value="${pp.id}" ${pp.id===p.id?'selected':''}>${esc(pp.name)}</option>`).join('')}</select></div><div class="field"><label>Стадия</label><select name="stage_id">${stages.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select></div>`:'<div class="card-sub">Сначала создайте юридическую воронку.</div>'}<div class="field full"><label>Названия дел (по одному на строку)</label><textarea class="bulk-textarea" name="titles" placeholder="Иванов И.И. — взыскание алиментов&#10;Петров П.П. — расторжение договора" required></textarea></div><div class="field full"><button class="btn primary" ${p?'':'disabled'}>Создать дела</button></div></form>`,'case-modal');document.getElementById('orgBulkForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const pipelineId=f.get('pipeline_id');const stageId=f.get('stage_id');const titles=String(f.get('titles')||'').split('\n').map(t=>t.trim()).filter(Boolean);if(!titles.length){toast('Введите хотя бы одно название');return}try{let created=0;for(const title of titles){const {error}=await sb.from('crm_cases').insert({title,legal_pipeline_id:pipelineId,legal_stage_id:stageId,organization_id:orgId,owner_id:state.user.id});if(error)throw error;created++;if(created%5===0)toast(`Создано ${created} из ${titles.length}...`)}await reload();closeModal();toast(`Создано ${titles.length} дел для «${o.name}»`)}catch(err){toast(err.message||'Ошибка при создании дел')}}}
@@ -602,7 +606,7 @@ function newTask(date=todayKey(),orgId='',caseId=''){const orgOptions=state.orgs
 function editTask(id){const t=state.tasks.find(x=>x.id===id);if(!t)return;const orgOptions=state.orgs.map(o=>`<option value="${o.id}" ${o.id===t.organization_id?'selected':''}>${esc(o.name)}</option>`).join('');const caseOptions=state.cases.map(c=>`<option value="${c.id}" ${c.id===t.case_id?'selected':''}>${esc(c.title)}</option>`).join('');modal(`<div class="modal-head"><h2>Редактировать задачу</h2><button class="close" onclick="closeModal()">×</button></div><form id="editTaskForm" class="grid" style="margin-top:16px"><div class="field full"><label>Задача</label><input name="title" value="${esc(t.title)}" required></div><div class="field"><label>Дата</label><input name="due_date" type="date" value="${esc(t.due_date||'')}"></div><div class="field"><label>Время</label><input name="due_time" type="time" value="${esc(t.due_time||'')}"></div><div class="field"><label>Организация</label><select name="organization_id"><option value="">Не указана</option>${orgOptions}</select></div><div class="field"><label>Дело</label><select name="case_id"><option value="">Не указано</option>${caseOptions}</select></div><div class="field full"><label>Заметка</label><textarea name="notes">${esc(t.notes||'')}</textarea></div><div class="field full"><button class="btn primary">Сохранить</button></div></form>`);document.getElementById('editTaskForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await sb.from('crm_tasks').update({title:f.get('title'),due_date:f.get('due_date')||null,due_time:f.get('due_time')||null,organization_id:f.get('organization_id')||null,case_id:f.get('case_id')||null,notes:f.get('notes')||null,updated_at:new Date().toISOString()}).eq('id',id);if(error)toast(error.message);else{closeModal();await reload();toast('Сохранено')}}}
 async function toggleTask(id,done){const {error}=await sb.from('crm_tasks').update({completed:done,completed_at:done?new Date().toISOString():null,updated_at:new Date().toISOString()}).eq('id',id);if(error){toast(error.message);return}await reload()}
 async function startApp(){if(!sb)sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const ok=await ensureMember();if(!ok){toast('Нет доступа к CRM');await sb.auth.signOut();showLogin();return}const {data:{session}}=await sb.auth.getSession();state.user=session?.user||state.user;if(!state.user){showLogin();return}await reload()}
-async function boot(){state.theme=localStorage.getItem('pravodom_theme')||'system';state.uiMode='compact';applyTheme();applyUiMode();sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const {data:{session}}=await sb.auth.getSession();if(session){try{const ok=await ensureMember();if(!ok){toast('Нет доступа к CRM');await sb.auth.signOut();showLogin();return}state.user=session.user;await reload()}catch(e){console.error(e);showFatal(e)}}else showLogin();sb.channel('pravodom-live').on('postgres_changes',{event:'*',schema:'public',table:'crm_pipelines'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_pipeline_stages'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_organizations'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_cases'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_case_groups'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_tasks'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_case_fields'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_case_field_values'},()=>reload()).subscribe();sb.auth.onAuthStateChange(async(_e,s)=>{if(s?.user&&!state.user){state.user=s.user;try{if(await ensureMember())await reload()}catch(e){showFatal(e)}}else if(!s){state.user=null;showLogin()}})}
+async function boot(){state.theme=localStorage.getItem('pravodom_theme')||'system';state.uiMode='compact';state.glass=localStorage.getItem('pravodom_glass')==='1';applyTheme();applyGlass();applyUiMode();sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const {data:{session}}=await sb.auth.getSession();if(session){try{const ok=await ensureMember();if(!ok){toast('Нет доступа к CRM');await sb.auth.signOut();showLogin();return}state.user=session.user;await reload()}catch(e){console.error(e);showFatal(e)}}else showLogin();sb.channel('pravodom-live').on('postgres_changes',{event:'*',schema:'public',table:'crm_pipelines'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_pipeline_stages'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_organizations'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_cases'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_case_groups'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_tasks'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_case_fields'},()=>reload()).on('postgres_changes',{event:'*',schema:'public',table:'crm_case_field_values'},()=>reload()).subscribe();sb.auth.onAuthStateChange(async(_e,s)=>{if(s?.user&&!state.user){state.user=s.user;try{if(await ensureMember())await reload()}catch(e){showFatal(e)}}else if(!s){state.user=null;showLogin()}})}
 document.addEventListener('click',e=>{if(!e.target.closest('.soft-select'))document.querySelectorAll('.soft-select.open').forEach(x=>x.classList.remove('open'))});
 boot();
 </script>
