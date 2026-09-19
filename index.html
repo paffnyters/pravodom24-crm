@@ -14,7 +14,7 @@
 body.light{color-scheme:light;--today:#fff1c7;--todayText:#8a6500}@media(prefers-color-scheme:dark){body.system{color-scheme:dark;--bg:#111315;--panel:#191c20;--panel2:#22262b;--text:#f4f5f7;--muted:#9ba2ac;--line:#30353c;--accent:#f4f5f7;--accentText:#111315;--danger:#ff8a80;--today:#3b321d;--todayText:#f3c969;--shadow:0 12px 40px rgba(0,0,0,.25)}}
 body.dark{color-scheme:dark;--bg:#111315;--panel:#191c20;--panel2:#22262b;--text:#f4f5f7;--muted:#9ba2ac;--line:#30353c;--accent:#f4f5f7;--accentText:#111315;--danger:#ff8a80;--today:#3b321d;--todayText:#f3c969;--shadow:0 12px 40px rgba(0,0,0,.25)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}button,input,textarea,select{font:inherit}button{cursor:pointer}
-.app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:220px;border-right:1px solid var(--line);background:var(--panel);padding:18px 12px;display:flex;flex-direction:column;z-index:9}.logo{font-weight:800;font-size:18px;padding:4px 10px 18px}.sidebar-nav{min-height:0;overflow-y:auto}.nav{display:grid;gap:5px}.nav button,.bottomnav button{border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:11px;text-align:left}.nav button.active,.nav button:hover,.bottomnav button.active{background:var(--panel2);color:var(--text)}.nav button.today-active,.bottomnav button.today-active{background:var(--today);color:var(--todayText);font-weight:700}.nav button.today-active.active,.bottomnav button.today-active.active{background:var(--today);color:var(--todayText)}.sidebar-bottom{margin-top:auto;padding-top:12px;background:var(--panel)}.settings-btn{width:100%;text-align:left}.user{font-size:12px;color:var(--muted);padding:0 10px;word-break:break-word;margin-top:10px}
+.app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:240px;border-right:1px solid var(--line);background:var(--panel);padding:18px 12px;display:flex;flex-direction:column;z-index:9;overflow:hidden}.logo{font-weight:800;font-size:18px;padding:4px 10px 18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sidebar-nav{min-height:0;overflow-y:auto;overflow-x:hidden}.nav{display:grid;gap:5px}.nav button,.bottomnav button{border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:11px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nav button.active,.nav button:hover,.bottomnav button.active{background:var(--panel2);color:var(--text)}.nav button.today-active,.bottomnav button.today-active{background:var(--today);color:var(--todayText);font-weight:700}.nav button.today-active.active,.bottomnav button.today-active.active{background:var(--today);color:var(--todayText)}.sidebar-bottom{margin-top:auto;padding-top:12px;background:var(--panel);overflow:hidden}.settings-btn{width:100%;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.user{font-size:12px;color:var(--muted);padding:0 10px;word-break:break-word;margin-top:10px;overflow:hidden}
 main{min-width:0;margin-left:220px;padding:24px 28px 90px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}.top h1{margin:0;font-size:25px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 13px;border-radius:10px}.btn.primary{background:var(--accent);color:var(--accentText);border-color:var(--accent)}.btn.danger{color:var(--danger)}.btn.small{padding:6px 8px;font-size:12px}.search{width:min(360px,100%);border:1px solid var(--line);background:var(--panel);color:var(--text);padding:11px 13px;border-radius:11px}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap}
 .board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(185px,195px);gap:8px;overflow-x:auto;padding-bottom:7px;scrollbar-width:thin;scrollbar-color:transparent transparent}.board:hover{scrollbar-color:var(--line) transparent}.board::-webkit-scrollbar{height:5px}.board::-webkit-scrollbar-track{background:transparent}.board::-webkit-scrollbar-thumb{background:transparent;border-radius:99px}.board:hover::-webkit-scrollbar-thumb{background:var(--line)}
 .column{background:var(--panel2);border:1px solid var(--line);border-radius:15px;min-height:420px;padding:8px}.column-head{display:flex;align-items:flex-start;justify-content:space-between;padding:5px 4px 10px;gap:8px}.column-title{font-weight:700}.count{color:var(--muted);font-size:12px}.card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:9px;margin-bottom:7px;box-shadow:0 2px 10px rgba(0,0,0,.025)}.card:hover{border-color:#aeb4bc}.card-title{font-weight:750;line-height:1.2;font-size:13px}.card-sub{color:var(--muted);font-size:11px;margin-top:4px}.card-action{width:100%;margin-top:8px;padding:7px 8px}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chip{font-size:11px;color:var(--muted);background:var(--panel2);border-radius:999px;padding:4px 7px}.empty{color:var(--muted);font-size:13px;padding:18px 5px;text-align:center}.hidden{display:none!important}
@@ -474,6 +474,55 @@ body.dark .glass-switch-thumb{background:#f4f5f7;box-shadow:0 2px 4px rgba(0,0,0
     transition:none!important;
   }
 }
+
+/* v3.13 — фиксы контраста и читаемости */
+/* Pipeline-tab active в liquid-glass — нормальная читаемость в обеих темах */
+body.liquid-glass .pipeline-tab{background:rgba(255,255,255,0.32);color:var(--text);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+body.liquid-glass.dark .pipeline-tab{background:rgba(255,255,255,0.08);color:var(--muted)}
+body.liquid-glass .pipeline-tab:hover{background:rgba(255,255,255,0.45)}
+body.liquid-glass.dark .pipeline-tab:hover{background:rgba(255,255,255,0.14)}
+body.liquid-glass .pipeline-tab.active{background:linear-gradient(135deg,#f08a24,#d97a14);color:#fff;border-color:rgba(255,255,255,0.18);font-weight:600;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 2px 8px rgba(240,138,36,0.28)}
+body.liquid-glass.dark .pipeline-tab.active{background:linear-gradient(135deg,#f08a24,#d97a14);color:#fff;box-shadow:0 2px 8px rgba(240,138,36,0.32)}
+/* Колонки канбана в светлой теме liquid-glass — контрастнее */
+body.liquid-glass:not(.dark) .column{
+  --panel:rgba(255,255,255,0.78);
+  --panel2:rgba(255,255,255,0.55);
+  --line:rgba(15,17,21,0.08);
+  background:rgba(255,255,255,0.78);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(15,17,21,0.08);
+  box-shadow:0 2px 8px rgba(15,17,21,0.04);
+}
+body.liquid-glass:not(.dark) .column .column-head{background:rgba(255,255,255,0.45);padding:6px 10px;border-radius:9px;margin-bottom:8px}
+body.liquid-glass:not(.dark) .column .column-title{color:var(--text);font-weight:600}
+body.liquid-glass:not(.dark) .column .count{background:rgba(15,17,21,0.08);color:var(--text)}
+/* Карточки на доске — в светлой теме liquid-glass чуть плотнее */
+body.liquid-glass:not(.dark) .card{
+  background:rgba(255,255,255,0.82);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(15,17,21,0.08);
+}
+body.liquid-glass:not(.dark) .card:hover{
+  box-shadow:0 8px 24px rgba(15,17,21,0.08),0 0 0 1px rgba(15,17,21,0.1) inset;
+}
+/* Chip-ы в светлой теме liquid-glass — контрастнее */
+body.liquid-glass:not(.dark) .chip{
+  background:rgba(255,255,255,0.6);
+  border:1px solid rgba(15,17,21,0.1);
+  color:var(--text);
+}
+/* Sidebar в светлой теме liquid-glass — плотнее, чтобы было видно навигацию */
+body.liquid-glass:not(.dark) .sidebar{
+  background:rgba(255,255,255,0.72);
+  backdrop-filter:blur(30px) saturate(180%);
+  -webkit-backdrop-filter:blur(30px) saturate(180%);
+  border-right:1px solid rgba(15,17,21,0.08);
+}
+body.liquid-glass:not(.dark) .sidebar-bottom{background:transparent}
+/* Pipeline-switch (контейнер табов воронок) — без горизонтальной прокрутки, красиво оборачивается */
+.pipeline-switch{flex-wrap:wrap;overflow-x:visible}
 </style>
 </head>
 <body class="system">
