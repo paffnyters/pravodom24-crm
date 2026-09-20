@@ -311,7 +311,6 @@ body.liquid-glass.dark .card:hover{
 }
 /* Колонки канбана — стекло */
 body.liquid-glass .column{
-  background:rgba(255,255,255,0.35);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
   border:1px solid transparent;
@@ -877,6 +876,31 @@ body.liquid-glass.dark *::-webkit-scrollbar-thumb:hover{background:rgba(255,255,
 @media(max-width:760px){
   *::-webkit-scrollbar{width:0;height:0}
   *{scrollbar-width:none}
+}
+
+/* v3.18 — тёмные колонки в liquid-glass.dark */
+body.liquid-glass.dark .column{
+  background:rgba(28,30,36,0.5);
+  border:1px solid rgba(255,255,255,0.04);
+  box-shadow:0 2px 8px rgba(0,0,0,0.18);
+}
+body.liquid-glass.dark .column .column-head{
+  background:rgba(255,255,255,0.04);
+  padding:6px 10px;
+  border-radius:9px;
+  margin-bottom:8px;
+}
+body.liquid-glass.dark .column .column-title{
+  color:#f4f5f7;
+  font-weight:600;
+}
+body.liquid-glass.dark .column .count{
+  background:rgba(255,255,255,0.08);
+  color:#f4f5f7;
+}
+body.liquid-glass.dark .column:has(.empty){
+  background:rgba(28,30,36,0.25);
+  border:1px dashed rgba(255,255,255,0.08);
 }
 </style>
 </head>
