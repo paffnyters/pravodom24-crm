@@ -298,7 +298,7 @@ body.liquid-glass .card{
   background:var(--panel);
   backdrop-filter:blur(18px) saturate(160%);
   -webkit-backdrop-filter:blur(18px) saturate(160%);
-  border:1px solid var(--line);
+  border:1px solid transparent;
   transition:transform .25s cubic-bezier(0.2,0.8,0.2,1),box-shadow .25s ease;
 }
 body.liquid-glass .card:hover{
@@ -313,7 +313,7 @@ body.liquid-glass .column{
   background:var(--panel);
   backdrop-filter:blur(20px) saturate(150%);
   -webkit-backdrop-filter:blur(20px) saturate(150%);
-  border:1px solid var(--line);
+  border:1px solid transparent;
 }
 body.liquid-glass .column:has(.empty){
   background:rgba(255,255,255,0.18);
@@ -492,7 +492,7 @@ body.liquid-glass:not(.dark) .column{
   background:rgba(255,255,255,0.78);
   backdrop-filter:blur(24px) saturate(180%);
   -webkit-backdrop-filter:blur(24px) saturate(180%);
-  border:1px solid rgba(15,17,21,0.08);
+  border:1px solid transparent;
   box-shadow:0 2px 8px rgba(15,17,21,0.04);
 }
 body.liquid-glass:not(.dark) .column .column-head{background:rgba(255,255,255,0.45);padding:6px 10px;border-radius:9px;margin-bottom:8px}
@@ -503,7 +503,7 @@ body.liquid-glass:not(.dark) .card{
   background:rgba(255,255,255,0.82);
   backdrop-filter:blur(16px) saturate(160%);
   -webkit-backdrop-filter:blur(16px) saturate(160%);
-  border:1px solid rgba(15,17,21,0.08);
+  border:1px solid transparent;
 }
 body.liquid-glass:not(.dark) .card:hover{
   box-shadow:0 8px 24px rgba(15,17,21,0.1);
@@ -720,6 +720,161 @@ body.liquid-glass .bottomnav button{
   .stage-switcher{flex-wrap:nowrap !important;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .stage-pill{flex:none !important}
 }
+
+/* v3.16 — мобильная «лёгкая» версия: без blur, solid фоны */
+@media(max-width:760px){
+  /* Полностью убираем backdrop-filter на мобильных */
+  body.liquid-glass *,
+  body.liquid-glass .sidebar,
+  body.liquid-glass .card,
+  body.liquid-glass .column,
+  body.liquid-glass .row,
+  body.liquid-glass .modal,
+  body.liquid-glass .chip,
+  body.liquid-glass .btn,
+  body.liquid-glass .stage-pill,
+  body.liquid-glass .documents-box,
+  body.liquid-glass .search,
+  body.liquid-glass .settings-grid>section,
+  body.liquid-glass .preview-modal,
+  body.liquid-glass .toast,
+  body.liquid-glass .archive-row,
+  body.liquid-glass .case-stage-bar,
+  body.liquid-glass .detail-main,
+  body.liquid-glass .detail-side,
+  body.liquid-glass .group,
+  body.liquid-glass .bottomnav,
+  body.liquid-glass .top{
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+  /* Полностью отключаем blob-анимацию */
+  body.liquid-glass::before,
+  body.liquid-glass::after{
+    display:none !important;
+    content:none !important;
+  }
+  /* Light тема — solid белый фон */
+  body.liquid-glass:not(.dark) .sidebar,
+  body.liquid-glass:not(.dark) .card,
+  body.liquid-glass:not(.dark) .column,
+  body.liquid-glass:not(.dark) .row,
+  body.liquid-glass:not(.dark) .modal,
+  body.liquid-glass:not(.dark) .chip,
+  body.liquid-glass:not(.dark) .btn,
+  body.liquid-glass:not(.dark) .stage-pill,
+  body.liquid-glass:not(.dark) .documents-box,
+  body.liquid-glass:not(.dark) .search,
+  body.liquid-glass:not(.dark) .settings-grid>section,
+  body.liquid-glass:not(.dark) .group,
+  body.liquid-glass:not(.dark) .bottomnav,
+  body.liquid-glass:not(.dark) .top{
+    background:#fff !important;
+  }
+  body.liquid-glass:not(.dark) .stage-pill.active{
+    background:linear-gradient(135deg,#f08a24,#d97a14) !important;
+    color:#fff !important;
+  }
+  body.liquid-glass:not(.dark) .chip{
+    background:#f0f2f5 !important;
+    color:#15171a !important;
+  }
+  body.liquid-glass:not(.dark) .btn:not(.primary):not(.danger){
+    background:#f0f2f5 !important;
+    color:#15171a !important;
+  }
+  body.liquid-glass:not(.dark) .sidebar{
+    background:#fff !important;
+  }
+  body.liquid-glass:not(.dark) .bottomnav{
+    background:#fff !important;
+    border-top:1px solid #e6e8ec !important;
+  }
+  /* Dark тема — solid тёмный фон */
+  body.liquid-glass.dark .sidebar,
+  body.liquid-glass.dark .card,
+  body.liquid-glass.dark .column,
+  body.liquid-glass.dark .row,
+  body.liquid-glass.dark .modal,
+  body.liquid-glass.dark .chip,
+  body.liquid-glass.dark .btn,
+  body.liquid-glass.dark .stage-pill,
+  body.liquid-glass.dark .documents-box,
+  body.liquid-glass.dark .search,
+  body.liquid-glass.dark .settings-grid>section,
+  body.liquid-glass.dark .group,
+  body.liquid-glass.dark .bottomnav,
+  body.liquid-glass.dark .top{
+    background:#191c20 !important;
+  }
+  body.liquid-glass.dark .chip{
+    background:#2a2f38 !important;
+    color:#f4f5f7 !important;
+  }
+  body.liquid-glass.dark .btn:not(.primary):not(.danger){
+    background:#2a2f38 !important;
+    color:#f4f5f7 !important;
+  }
+  body.liquid-glass.dark .bottomnav{
+    background:#191c20 !important;
+    border-top:1px solid #30353c !important;
+  }
+  /* Toast — solid тоже */
+  body.liquid-glass .toast{
+    background:#1a1d21 !important;
+    color:#fff !important;
+  }
+  /* Modal — solid фон */
+  body.liquid-glass .modal{
+    background:var(--bg) !important;
+  }
+  body.liquid-glass:not(.dark) .modal{background:#fff !important}
+  body.liquid-glass.dark .modal{background:#191c20 !important}
+  /* Overlay — solid вместо blur */
+  body.liquid-glass .overlay{
+    background:rgba(0,0,0,0.5) !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+  /* Убираем все transitions на hover — мгновенный отклик */
+  body.liquid-glass .card,
+  body.liquid-glass .row,
+  body.liquid-glass .stage-pill,
+  body.liquid-glass .btn,
+  body.liquid-glass .chip,
+  body.liquid-glass .nav button,
+  body.liquid-glass .bottomnav button{
+    transition:none !important;
+    transform:none !important;
+  }
+  body.liquid-glass .card:hover,
+  body.liquid-glass .row:hover{
+    transform:none !important;
+    box-shadow:none !important;
+  }
+}
+
+/* v3.17 — ползунок прокрутки в цвет темы */
+*{scrollbar-width:thin;scrollbar-color:var(--muted) transparent}
+*::-webkit-scrollbar{width:8px;height:8px;background:transparent}
+*::-webkit-scrollbar-track{background:transparent;border-radius:99px}
+*::-webkit-scrollbar-thumb{background:var(--muted);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+*::-webkit-scrollbar-thumb:hover{background:var(--text);background-clip:padding-box}
+*::-webkit-scrollbar-corner{background:transparent}
+/* Light тема — серый ползунок на прозрачном фоне */
+body.light,body.system:not(.dark){--scrollbar-thumb:#a0a6af;--scrollbar-thumb-hover:#747a83}
+/* Dark тема — светло-серый ползунок */
+body.dark,body.system[data-theme="dark"]{--scrollbar-thumb:#3a4048;--scrollbar-thumb-hover:#4a5058}
+/* В liquid-glass ползунок более мягкий, под стекло */
+body.liquid-glass:not(.dark) *::-webkit-scrollbar-thumb{background:rgba(15,17,21,0.22);background-clip:padding-box}
+body.liquid-glass:not(.dark) *::-webkit-scrollbar-thumb:hover{background:rgba(15,17,21,0.4);background-clip:padding-box}
+body.liquid-glass.dark *::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.18);background-clip:padding-box}
+body.liquid-glass.dark *::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.32);background-clip:padding-box}
+/* На мобильных — вообще без ползунка, чтобы не мешал */
+@media(max-width:760px){
+  *::-webkit-scrollbar{width:0;height:0}
+  *{scrollbar-width:none}
+}
 </style>
 </head>
 <body class="system">
@@ -752,8 +907,8 @@ function todayPending(){return pendingTasks().filter(t=>t.due_date===todayKey())
 function overdueTasks(){return pendingTasks().filter(t=>t.due_date&&t.due_date<todayKey())}
 function showLogin(){document.getElementById('root').innerHTML=`<div class="login"><div class="loginbox"><h1>CRM Праводом.рф</h1><form id="loginForm"><input id="email" type="email" placeholder="Email" required><input id="password" type="password" placeholder="Пароль" required><button class="btn primary">Войти</button></form></div></div>`;document.getElementById('loginForm').onsubmit=async e=>{e.preventDefault();try{const {error}=await sb.auth.signInWithPassword({email:email.value,password:password.value});if(error)throw error;await startApp()}catch(x){toast(x.message||'Ошибка входа')}}}
 function navIcon(path){return `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`}
-function nav(){const hasToday=todayPending().length>0;const icons={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',sales:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',legal:'<path d="M3 6l3 1m0 0l-3 9a5 5 0 0 0 6 0"/><path d="M6 7l3 9m6-10l3-1m-3 1l3 9a5 5 0 0 1-6 0m6-9l-3 9"/>',clients:'<path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/>',tasks:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'};const labels={today:'Сегодня',sales:'Клиенты',legal:'Юр. работа',clients:'Архив',tasks:'Задачи',settings:'Настройки'};const btn=(v)=>`<button class="${state.view===v?'active ':''}${v==='today'&&hasToday?'today-active':''}" onclick="setView('${v}')" data-view="${v}">${navIcon(icons[v])}<span class="nav-label">${labels[v]}</span>${v==='today'&&hasToday?'<span class="today-dot"></span>':''}</button>`;return `<aside class="sidebar"><div class="logo">CRM Праводом.рф</div><div class="sidebar-nav"><div class="nav">${btn('today')}${btn('sales')}${btn('legal')}${btn('clients')}${btn('tasks')}</div></div><div class="sidebar-bottom"><button class="btn settings-btn ${state.view==='settings'?'primary':''}" onclick="setView('settings')">${navIcon(icons.settings)}<span class="nav-label">Настройки</span></button><div class="user">${esc(state.user?.email||'')}</div></div></aside>`}
-function bottomNav(){const hasToday=todayPending().length>0;const icons={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',sales:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',legal:'<path d="M3 6l3 1m0 0l-3 9a5 5 0 0 0 6 0"/><path d="M6 7l3 9m6-10l3-1m-3 1l3 9a5 5 0 0 1-6 0m6-9l-3 9"/>',clients:'<path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/>',tasks:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12h2M3 12h2M12 3v2M12 19v2"/>'};const labels={today:'Сегодня',sales:'Клиенты',legal:'Юр.',clients:'Архив',tasks:'Задачи',settings:'Ещё'};const btn=(v)=>`<button class="${state.view===v?'active ':''}${v==='today'&&hasToday?'today-active':''}" onclick="setView('${v}')" data-view="${v}"><span class="bottomnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[v]}</svg></span><span class="bottomnav-label">${labels[v]}</span>${v==='today'&&hasToday?'<span class="today-dot"></span>':''}</button>`;return `<nav class="bottomnav">${btn('today')}${btn('sales')}${btn('legal')}${btn('tasks')}${btn('settings')}</nav>`}
+function nav(){const hasToday=todayPending().length>0;const icons={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',sales:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',legal:'<path d="M3 19V5l9 2 9-2v14l-9-2-9 2z"/><path d="M12 7v12"/><path d="M3 19l9-2 9 2"/>',clients:'<path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/>',tasks:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'};const labels={today:'Сегодня',sales:'Клиенты',legal:'Юр. работа',clients:'Архив',tasks:'Задачи',settings:'Настройки'};const btn=(v)=>`<button class="${state.view===v?'active ':''}${v==='today'&&hasToday?'today-active':''}" onclick="setView('${v}')" data-view="${v}">${navIcon(icons[v])}<span class="nav-label">${labels[v]}</span>${v==='today'&&hasToday?'<span class="today-dot"></span>':''}</button>`;return `<aside class="sidebar"><div class="logo">CRM Праводом.рф</div><div class="sidebar-nav"><div class="nav">${btn('today')}${btn('sales')}${btn('legal')}${btn('clients')}${btn('tasks')}</div></div><div class="sidebar-bottom"><button class="btn settings-btn ${state.view==='settings'?'primary':''}" onclick="setView('settings')">${navIcon(icons.settings)}<span class="nav-label">Настройки</span></button><div class="user">${esc(state.user?.email||'')}</div></div></aside>`}
+function bottomNav(){const hasToday=todayPending().length>0;const icons={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',sales:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',legal:'<path d="M3 19V5l9 2 9-2v14l-9-2-9 2z"/><path d="M12 7v12"/><path d="M3 19l9-2 9 2"/>',clients:'<path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/>',tasks:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12h2M3 12h2M12 3v2M12 19v2"/>'};const labels={today:'Сегодня',sales:'Клиенты',legal:'Юр.',clients:'Архив',tasks:'Задачи',settings:'Ещё'};const btn=(v)=>`<button class="${state.view===v?'active ':''}${v==='today'&&hasToday?'today-active':''}" onclick="setView('${v}')" data-view="${v}"><span class="bottomnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[v]}</svg></span><span class="bottomnav-label">${labels[v]}</span>${v==='today'&&hasToday?'<span class="today-dot"></span>':''}</button>`;return `<nav class="bottomnav">${btn('today')}${btn('sales')}${btn('legal')}${btn('tasks')}${btn('settings')}</nav>`}
 function shell(){document.getElementById('root').innerHTML=`<div class="app">${nav()}<main id="main"></main></div>${bottomNav()}<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>`;render()}
 function setView(v){state.view=v;state.search='';shell()}
 function toggleSidebar(){const sb=document.querySelector('.sidebar');const bd=document.getElementById('sidebarBackdrop');if(!sb)return;sb.classList.toggle('open');bd?.classList.toggle('show')}
