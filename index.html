@@ -1104,6 +1104,45 @@ body.liquid-glass.dark .template-preview-actions{background:rgba(28,30,36,0.94)}
 .template-preview-actions,.template-form-actions{display:flex;gap:8px;align-items:center}
 /* Chrome panels — растянуть */
 .chrome-panels{max-height:none;flex:1;overflow-y:auto}
+
+/* v3.27 — форма в 2 колонки + табы карточек видны + белый предпросмотр + Word-style toolbar */
+/* Форма — 2 колонки */
+.template-form{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px !important}
+.template-form .field.full{grid-column:1/-1}
+.template-form .field{margin-bottom:0}
+.template-form .field input{max-width:none;width:100%;padding:8px 10px !important;font-size:13px !important}
+.template-form .field label{font-size:10px !important;margin-bottom:2px !important}
+/* Табы карточек (template-tabs) — видимые, со скроллом */
+.template-tabs{display:flex;gap:4px;overflow-x:auto;padding:6px 0;margin-bottom:10px;scrollbar-width:thin;border-bottom:1px solid var(--line);min-height:36px;align-items:center}
+.template-tabs::-webkit-scrollbar{height:4px}
+.template-tabs::-webkit-scrollbar-thumb{background:var(--muted);border-radius:99px}
+.template-tab{padding:7px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;cursor:pointer;font-size:12px;color:var(--muted);white-space:nowrap;flex:none;max-width:200px;overflow:hidden;text-overflow:ellipsis;transition:all .12s}
+.template-tab:hover{color:var(--text)}
+.template-tab.active{background:linear-gradient(135deg,#f08a24,#d97a14);color:#fff;border-color:#f08a24;font-weight:600}
+/* Предпросмотр — ВСЕГДА белый фон */
+.template-preview-wrap{background:#fff !important;color:#15171a !important}
+.template-preview{font-family:Times New Roman,serif !important;color:#000 !important}
+.order-doc{color:#000 !important}
+body.dark .template-preview-wrap,
+body.liquid-glass.dark .template-preview-wrap{background:#fff !important;color:#15171a !important}
+body.dark .template-preview,
+body.liquid-glass.dark .template-preview{color:#000 !important}
+body.dark .order-doc,
+body.liquid-glass.dark .order-doc{color:#000 !important}
+/* Toolbar — Word-стиль (светлый) */
+.template-toolbar{background:#f3f3f3 !important;border:1px solid #d0d0d0 !important;border-radius:6px !important;padding:5px 8px !important;gap:2px !important}
+.template-toolbar button{background:#fff !important;color:#333 !important;border:1px solid #d0d0d0 !important;border-radius:4px !important;min-width:30px !important;height:28px !important;font-size:13px !important}
+.template-toolbar button:hover{background:#e8e8e8 !important;border-color:#b0b0b0 !important}
+.toolbar-sep{background:#d0d0d0 !important;height:20px !important}
+body.dark .template-toolbar,
+body.liquid-glass.dark .template-toolbar{background:#f3f3f3 !important;border-color:#d0d0d0 !important}
+body.dark .template-toolbar button,
+body.liquid-glass.dark .template-toolbar button{background:#fff !important;color:#333 !important;border-color:#d0d0d0 !important}
+body.dark .toolbar-sep,
+body.liquid-glass.dark .toolbar-sep{background:#d0d0d0 !important}
+@media(max-width:760px){
+  .template-form{grid-template-columns:1fr !important}
+}
 </style>
 </head>
 <body class="system">
