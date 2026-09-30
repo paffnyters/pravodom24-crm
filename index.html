@@ -1143,6 +1143,17 @@ body.liquid-glass.dark .toolbar-sep{background:#d0d0d0 !important}
 @media(max-width:760px){
   .template-form{grid-template-columns:1fr !important}
 }
+
+/* v3.28 — фикс 2 колонки + белый фон в chrome-panels */
+.template-form{display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px 12px !important}
+/* Chrome panels — ВСЕГДА белый фон */
+.chrome-panels{background:#fff !important;padding:8px !important;border-radius:8px !important}
+.chrome-panel{background:#fff !important;color:#15171a !important}
+.chrome-panel .template-preview{background:#fff !important;color:#000 !important}
+.chrome-panel .order-doc{color:#000 !important}
+/* Toolbar в chrome-panel — тоже видимый */
+.chrome-panel .template-toolbar{background:#f3f3f3 !important;display:flex !important}
+@media(max-width:760px){.template-form{grid-template-columns:1fr !important}}
 </style>
 </head>
 <body class="system">
